@@ -123,7 +123,7 @@ class Eternity:
             button.grid(row = 0, column = i, sticky=tk.NSEW)
             i+=1
         
-        button = tk.Button(self.self_buttons_frame, text = 'AC', bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=self.clear_calculation)
+        button = tk.Button(self.self_buttons_frame, text = 'AC', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=self.clear_calculation)
         button.grid(row = 0, column = i, sticky=tk.NSEW)
 
     #Initialize the equal button
@@ -197,8 +197,6 @@ class Eternity:
     #Run method
     def run(self):
         self.window.mainloop()
-
-
 
 
 if __name__ == "__main__":
