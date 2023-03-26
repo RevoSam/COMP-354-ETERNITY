@@ -17,7 +17,8 @@ class Eternity:
 
         self.start = True
         self.window = tk.Tk()
-        self.child_window_result = "";
+        self.child_window_result = ""
+        self.destroy_child = False
 
         #set the size of the window
         self.window.geometry("700x500")
@@ -190,6 +191,10 @@ class Eternity:
             self.handle_functions_buttons_call("MAD", 1, 0, 0, 0)
         if function == "sd":
             self.handle_functions_buttons_call("sd", 1, 0, 0, 0)
+        
+
+
+
     def handle_functions_buttons_call(self, *arg):
         labels = ['x', 'n', 'a', 'b']
         self.child_window_result = tk.Toplevel(self.window)
@@ -261,7 +266,6 @@ class Eternity:
         #Here is where we will call our functions
         if function == "ab^n":
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
-
         if function == "Gamma":
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
         if function == "x_power_n":
@@ -276,10 +280,12 @@ class Eternity:
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
         if function == "sd":
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+        
+        self.child_window_result.destroy()
 
     
     def clear_variables(self):
-        self.child_window_result = "";
+        self.child_window_result = ""
 
 
     def add_special_operations(self, addedvalue):
