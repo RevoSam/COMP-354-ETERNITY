@@ -1,4 +1,5 @@
 import tkinter as tk
+import math as xMath
 
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
@@ -27,33 +28,42 @@ class Eternity:
         self_buttons_frame = self.initialize_buttons_frame()
 
         #Creating the Labels to show total and current calculation
-        self.total = "0"
-        self.currentCalculation = "0"
+        self.total = ""
+        self.currentCalculation = ""
         self.total_label, self.current_label = self.initialize_display_labels()
 
         #Initialize the pad buttons
         self.pad_values = {
-            1: (3, 0),
-            2: (3, 1),
-            3: (3, 2),
+            1: (4, 0),
+            2: (4, 1),
+            3: (4, 2),
 
-            4: (2, 0),
-            5: (2, 1),
-            6: (2, 2),
+            4: (3, 0),
+            5: (3, 1),
+            6: (3, 2),
 
-            7: (1, 0),
-            8: (1, 1),
-            9: (1, 2),
+            7: (2, 0),
+            8: (2, 1),
+            9: (2, 2),
 
-            0: (4, 2),
-            '.': (4,1),
-            '√': (4,0)
+            0: (5, 2),
+            '.': (5,1),
+            '√': (5,0)
         }
+
+
 
         #list of regular operations
         self.operations = {'+':'+', '-':'-', '*':'\u00d7', '/':'\u00F7'}
         #list of special operators
-        self.special_operations = {'←', 'e', 'Π'}
+        self.special_operations = {'Del':'\u2190', 'e':'\u2107', 'PI': '\u03c0'}
+        #list of Parenthesis
+        self.parenthesis = {'(' : '\u0028', ')' : '\u0029'}
+        #list of functions
+        self.functions = {'Save' : 'Save', 'Gamma': '\u0393\u0028x\u0029', 'ab^n' : 'ab\u207f', 'x_power_n': 'x\u207f',  'Recal' : 'Recall', 'arccos' : 'arccos\u0028x\u0029',
+                          'sinh':'sinh\u0028x\u0029','logb':'log\u2090\u0028x\u0029', 'MAD':'MAD', 'sd' : '\u03c3'
+                          }
+
 
         #Initialize the buttons frame
         self.self_buttons_frame = self.initialize_buttons_frame()
@@ -65,6 +75,10 @@ class Eternity:
         self.initialize_special_operators_button()
         #add the equal button
         self.initialize_equal_button()
+        #add the Parenthesis buttons
+        self.initialize_parenthesis()
+        #add functions buttons
+        self.initialize_functions_buttons()
 
         #To Occupy all the space available
         self.self_buttons_frame.rowconfigure(0, weight=1)
@@ -104,10 +118,12 @@ class Eternity:
                 baground_color = BUTTON_PAD_COLOR
             button = tk.Button(self.self_buttons_frame, text = str(value), bg = baground_color, fg = LABEL_COLOR, font=PAD_FONT_STYLE, borderwidth=0, padx=10, command=lambda x=value: self.add_to_current(x))
             button.grid(row=grid_loc[0], column=grid_loc[1], sticky=tk.NSEW)
+            
+           
     
     #Initialize the operations buttons
     def initialize_operators_button(self):
-        i = 1
+        i = 2
         for operator, sign in self.operations.items():
             button = tk.Button(self.self_buttons_frame, text = sign, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=operator: self.append_operation(x))
             button.grid(row = i, column = 3, sticky=tk.NSEW)
@@ -116,36 +132,67 @@ class Eternity:
     #Initialize the special operations buttons
     def initialize_special_operators_button(self):
         i = 0
-        for symbol in self.special_operations:
+        for symbol, value in self.special_operations.items():
             baground_color = BUTTON_OPERATOR_COLOR
             font_color = LABEL_COLOR
-            button = tk.Button(self.self_buttons_frame, text = symbol, bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, padx=10)
-            button.grid(row = 0, column = i, sticky=tk.NSEW)
+            button = tk.Button(self.self_buttons_frame, text = value, bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=symbol: self.add_special_operations(x))
+            button.grid(row = 1, column = i, sticky=tk.NSEW)
             i+=1
         
         button = tk.Button(self.self_buttons_frame, text = 'AC', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=self.clear_calculation)
-        button.grid(row = 0, column = i, sticky=tk.NSEW)
+        button.grid(row = 1, column = i, sticky=tk.NSEW)
 
     #Initialize the equal button
     def initialize_equal_button(self):
         button = tk.Button(self.self_buttons_frame, text = '=', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=self.evaluate_current_Calculation)
-        button.grid(row = 3, column = 4, rowspan = 2, sticky=tk.NSEW)
+        button.grid(row = 4, column = 5, rowspan = 2, sticky=tk.NSEW)
 
+    def initialize_parenthesis(self):
+        i = 1
+        for operator, symbol in self.parenthesis.items():
+            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=operator: self.append_operation(x))
+            button.grid(row = 3 + i, column = 4, sticky=tk.NSEW)
+            i += 1
+    
+    def initialize_functions_buttons(self):
+        i = 0
+        span = 2
+        _column = 4
+        #       self.functions = {'Gamma': '\u0393', 'ab^x' : 'ab_power_x', 'x^y': 'x_power_y', 'Save' : 'Save', 'Recal' : 'Recall', 'arccos' : 'arccos\u0028x\u0029',
+        #                  'sinh':'sinh\u0028x\u0029','logb':'log\u2090\u0028x\u0029', 'MAD':'MAD', 'sd' : '\u03c3'
+        #                 }
+
+        for function, symbol in self.functions.items():
+
+            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10)
+            button.grid(row = 0 + i, column = _column, columnspan = span, sticky=tk.NSEW)
+            i += 1
+            if i > 3 and _column == 4:
+                i = 0
+                _column = _column + span
+
+    def add_special_operations(self, addedvalue):
+        #        self.special_operations = {'Del':'\u2190', 'e':'\u2107', 'PI': '\u03c0'}
+        if addedvalue == 'Del':
+            self.currentCalculation = self.currentCalculation[0:len(self.currentCalculation) - 1]
+        if addedvalue == 'e':
+            self.currentCalculation = str(xMath.e)
+        if addedvalue == 'PI':
+            self.currentCalculation = str(xMath.pi)
+        self.update_current()
 
     #Add the number to the current Calculation
     def add_to_current(self, addedvalue):
-        if self.start is True:
-            self.currentCalculation = str(addedvalue)
-        else:
-            self.currentCalculation += str(addedvalue)
+        value_to_add = addedvalue
+        if addedvalue == '.':
+          if self.currentCalculation.find('.') > 0:
+              value_to_add = ""
+        self.currentCalculation += str(value_to_add)
         self.update_current()
 
     #Add the operation to the current Calculation
     def append_operation(self, operator):
         self.currentCalculation += operator
-        if self.start is True:
-            self.total = ""
-            self.start = False
         self.total += self.currentCalculation
         self.currentCalculation = ""
         self.update_total()
