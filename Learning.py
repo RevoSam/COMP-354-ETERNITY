@@ -51,7 +51,7 @@ class Eternity:
         }
 
         #list of regular operations
-        self.operations = {'+', '-', '×', '/'}
+        self.operations = {'+':'+', '-':'-', '*':'\u00d7', '/':'\u00F7'}
         #list of special operators
         self.special_operations = {'←', 'e', 'Π'}
 
@@ -108,8 +108,8 @@ class Eternity:
     #Initialize the operations buttons
     def initialize_operators_button(self):
         i = 1
-        for symbol in self.operations:
-            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=symbol: self.append_operation(x))
+        for operator, sign in self.operations.items():
+            button = tk.Button(self.self_buttons_frame, text = sign, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=operator: self.append_operation(x))
             button.grid(row = i, column = 3, sticky=tk.NSEW)
             i+=1
 
@@ -142,8 +142,6 @@ class Eternity:
 
     #Add the operation to the current Calculation
     def append_operation(self, operator):
-        if operator == "×":
-            operator = '*'
         self.currentCalculation += operator
         if self.start is True:
             self.total = ""
@@ -156,7 +154,8 @@ class Eternity:
     #Update the total label
     def update_total(self):
         totalCalculation = self.total
-        totalCalculation = totalCalculation.replace('*', "×")
+        for operator, sign in self.operations.items():
+            totalCalculation = totalCalculation.replace(operator, f' {sign} ')
         self.total_label.config(text = totalCalculation)
 
     #Update the current calculation label
@@ -176,7 +175,6 @@ class Eternity:
         self.update_total()
 
         try:
-
             self.currentCalculation = str(eval(self.total))
             self.total = ""
         except Exception as error:
