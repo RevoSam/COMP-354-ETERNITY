@@ -17,6 +17,8 @@ class Eternity:
 
         self.start = True
         self.window = tk.Tk()
+        self.child_window_result = "";
+
         #set the size of the window
         self.window.geometry("700x500")
         #disable resizing
@@ -158,18 +160,127 @@ class Eternity:
         i = 0
         span = 2
         _column = 4
-        #       self.functions = {'Gamma': '\u0393', 'ab^x' : 'ab_power_x', 'x^y': 'x_power_y', 'Save' : 'Save', 'Recal' : 'Recall', 'arccos' : 'arccos\u0028x\u0029',
-        #                  'sinh':'sinh\u0028x\u0029','logb':'log\u2090\u0028x\u0029', 'MAD':'MAD', 'sd' : '\u03c3'
-        #                 }
-
         for function, symbol in self.functions.items():
-
-            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10)
+            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=function: self.functions_buttons_click(x))
             button.grid(row = 0 + i, column = _column, columnspan = span, sticky=tk.NSEW)
             i += 1
             if i > 3 and _column == 4:
                 i = 0
                 _column = _column + span
+    
+    def functions_buttons_click(self, function):
+        #        self.functions = {'Save' : 'Save', 'Gamma': '\u0393\u0028x\u0029', 'ab^n' : 'ab\u207f', 'x_power_n': 'x\u207f',  'Recal' : 'Recall', 'arccos' : 'arccos\u0028x\u0029',
+        #                  'sinh':'sinh\u0028x\u0029','logb':'log\u2090\u0028x\u0029', 'MAD':'MAD', 'sd' : '\u03c3'
+        #                 }
+        #Order of arguments: x, n, a, b
+        print(function)
+        if function == "ab^n":
+            self.handle_functions_buttons_call("ab^n", 0, 1, 1, 1)
+        if function == "Gamma":
+            self.handle_functions_buttons_call("Gamma", 1, 0, 0, 0)
+        if function == "x_power_n":
+            self.handle_functions_buttons_call("x_power_n", 1, 1, 0, 0)
+        if function == "arccos":
+            self.handle_functions_buttons_call("arccos", 1, 0, 0, 0)
+        if function == "sinh":
+            self.handle_functions_buttons_call("sinh", 1, 0, 0, 0)
+        if function == "logb":
+            self.handle_functions_buttons_call("logb", 1, 0, 1, 0)
+        if function == "MAD":
+            self.handle_functions_buttons_call("MAD", 1, 0, 0, 0)
+        if function == "sd":
+            self.handle_functions_buttons_call("sd", 1, 0, 0, 0)
+    def handle_functions_buttons_call(self, *arg):
+        labels = ['x', 'n', 'a', 'b']
+        self.child_window_result = tk.Toplevel(self.window)
+        self.child_window_result.geometry("550x50")
+        _width = 10
+        self.child_window_result.resizable(0, 0)
+        self.child_window_result.x = tk.StringVar()
+        self.child_window_result.n = tk.StringVar()
+        self.child_window_result.a = tk.StringVar()
+        self.child_window_result.b = tk.StringVar()
+
+        self.child_window_result.x_input = tk.Entry()
+        self.child_window_result.n_input = tk.Entry()
+        self.child_window_result.a_input = tk.Entry()
+        self.child_window_result.b_input = tk.Entry()
+
+        frame = tk.Frame( self.child_window_result, height = 50, bg = BUTTON_EQUAL_COLOR)
+        frame.pack(expand=True, fill="both")
+        function_name = ""
+        for function, functionName in self.functions.items():
+            if arg[0] == function:
+                function_name = str(functionName)
+                break
+        self.child_window_result.title("Input for function: " + function_name)
+
+
+        if (arg[1] != 0):
+            x_label = tk.Label(frame, text="x:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+            x_label.grid(row=1, column=1, sticky=tk.NSEW, padx=5, pady=5)
+
+            self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
+            self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.NSEW, padx=5, pady=5)
+        
+        if (arg[2] != 0):
+            n_label = tk.Label(frame, text="n:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+            n_label.grid(row=1, column=3, sticky=tk.NSEW, padx=5, pady=5)
+
+            self.child_window_result.n_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.n, width=_width)
+            self.child_window_result.n_input.grid(row=1, column=4, sticky=tk.NSEW, padx=5, pady=5)
+        
+        if (arg[3] != 0):
+            a_label = tk.Label(frame, text="a:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+            a_label.grid(row=1, column=5, sticky=tk.NSEW, padx=5, pady=5)
+
+            self.child_window_result.a_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.a, width=_width)
+            self.child_window_result.a_input.grid(row=1, column=6, sticky=tk.NSEW, padx=5, pady=5)
+
+        if (arg[4] != 0):
+            b_label = tk.Label(frame, text="b:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+            b_label.grid(row=1, column=7, sticky=tk.NSEW, padx=5, pady=5)
+
+            self.child_window_result.b_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.b, width=_width)
+            self.child_window_result.b_input.grid(row=1, column=8, sticky=tk.NSEW, padx=5, pady=5)
+        
+        frame.rowconfigure(0, weight=1)
+        frame.columnconfigure(0, weight=1)
+
+         #Order of arguments: x, n, a, b
+        button = tk.Button(frame, text="Submit", command=lambda x = arg[0]: self.execute_function(x))
+        button.grid(row=1, column= 9, padx=5, pady=5,sticky = tk.NSEW)
+
+    def execute_function(self, function):
+        print("Clicked! " + function)
+        self.child_window_result.x = self.child_window_result.x_input.get()
+        self.child_window_result.n = self.child_window_result.n_input.get()
+        self.child_window_result.a = self.child_window_result.a_input.get()
+        self.child_window_result.b = self.child_window_result.b_input.get()
+
+        #Here is where we will call our functions
+        if function == "ab^n":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+
+        if function == "Gamma":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+        if function == "x_power_n":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+        if function == "arccos":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+        if function == "sinh":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+        if function == "logb":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+        if function == "MAD":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+        if function == "sd":
+            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+
+    
+    def clear_variables(self):
+        self.child_window_result = "";
+
 
     def add_special_operations(self, addedvalue):
         #        self.special_operations = {'Del':'\u2190', 'e':'\u2107', 'PI': '\u03c0'}
