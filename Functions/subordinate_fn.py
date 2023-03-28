@@ -26,8 +26,8 @@ def sqrt(z):
    return z ** 0.5
 
 # Taylor series approximation
+# formula @ https://web.ma.utexas.edu/users/m408s/m408d/CurrentWeb/LM11-10-4.php
 def sin(z):
-   z = deg(z)
    n = 75  #precision
    y = 0
    for i in range(0,n,1):
