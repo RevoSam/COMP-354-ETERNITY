@@ -1,5 +1,9 @@
 import tkinter as tk
+from tkinter import filedialog as fd
 import math as xMath
+import os
+import csv
+import Functions.StandardDeviation as _SD
 
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
@@ -188,10 +192,70 @@ class Eternity:
         if function == "logb":
             self.handle_functions_buttons_call("logb", 1, 0, 1, 0)
         if function == "MAD":
-            self.handle_functions_buttons_call("MAD", 1, 0, 0, 0)
+            self.handle_multiple_inputs("MAD")
         if function == "sd":
-            self.handle_functions_buttons_call("sd", 1, 0, 0, 0)
+            self.handle_multiple_inputs("SD")
         
+
+    def handle_multiple_inputs(self, callingFunction):
+        i = 1
+        self.child_window_result = tk.Toplevel(self.window)
+        self.child_window_result.geometry("550x100")
+        _width = 50
+        self.child_window_result.resizable(0, 0)
+        self.child_window_result.x_input = tk.Entry()
+
+        self.child_window_result.x = tk.StringVar()
+        
+        frame = tk.Frame( self.child_window_result, height = 50, bg = BUTTON_EQUAL_COLOR)
+        frame.pack(expand=True, fill="both")
+        function_name = ""
+        for function, functionName in self.functions.items():
+            if callingFunction == function:
+                function_name = str(functionName)
+                break
+        self.child_window_result.title("Input for function: " + function_name)
+
+
+
+        x_label = tk.Label(frame, text="Values seprated by ',':",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+        x_label.grid(row=1, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
+
+        self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
+        self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
+
+        y_label = tk.Label(frame, text="Or Import a CSV file: ",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+        y_label.grid(row=2, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
+
+        button = tk.Button(frame, text="Import", command= self.open_file_dialogue)
+        button.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
+
+        
+        self.child_window_result.rowconfigure(1, weight=1)
+        self.child_window_result.columnconfigure(1, weight=1)
+
+        frame.rowconfigure(1, weight=1)
+        frame.columnconfigure(1, weight=1)
+
+        
+
+
+
+    def open_file_dialogue(self):
+        #Launch the dialogue in the same directory where the application is running
+        filepath = fd.askopenfilename(initialdir=os.getcwd(), title="File to import", filetypes=(("CSV", "*.csv"),))
+        with open(filepath, 'r') as file:
+            #print(file.read())
+            csvreader = csv.reader(file, delimiter=',')
+            data_points = []
+            for row in csvreader:
+                for i in range(len(row)):
+                    data_points.append(row[i])
+            sum = 0
+            for i in range(len(data_points)):
+                sum += int(data_points[i])
+            print("AVG: " + str((sum / len(data_points))))
+            #print(data_points)
 
 
 

@@ -49,4 +49,4 @@ def standard_deviation_tests():
     standard_deviation(test_points, True)
 
 
-standard_deviation_tests()
+#standard_deviation_tests()
