@@ -1,7 +1,7 @@
 # unit tests for all functions
 
 import unittest
-from gamma import *
+from special_fn import *
 
 class Test_Gamma(unittest.TestCase):
 
@@ -17,6 +17,7 @@ class Test_Gamma(unittest.TestCase):
     def test_gamma_invalid_input(self):
         self.assertEqual(gamma(0), None)
         self.assertEqual(gamma(-1), None)
+
 
 if __name__ == '__main__':
     unittest.main()

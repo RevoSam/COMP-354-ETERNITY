@@ -1,5 +1,6 @@
 # Written by (add your name if you contributed pls)
 # Roxane Morin, 40191881
+# Hong Nhat Ai Nguyen, 40192995
 # COMP 354
 
 # Subordinate functions for Eternity
@@ -42,20 +43,9 @@ def sqrt(z):
       return None
    return z ** 0.5
 
-# Return x^y.
-def power(x,y):
-    if y == 0:
-        return 1
-    else:
-        result = 1
-        for i in range(y):
-            result = result * x
-    return result
-
 # Return e^z.
 def exp(z):
    return EULER ** z
-
 
 ## Trigonometry
 
@@ -68,10 +58,16 @@ def sin(z):
       y = y + ((-1)**i) * (z**(2*i+1)) / factorial(2*i+1)
    return y
 
-# Hyperbolic sine function
-def sinh(x):
-    return (pow(EULER,x) - pow(EULER,-x)) / 2
-
+def cosine(x, EPSILON):
+    result = 0
+    n = 0
+    while True:
+        term = ((-1) * n) * (x * (2 * n)) / factorial(2 * n)
+        result += term
+        if abs(term) <= EPSILON:
+            break
+        n += 1
+    return result
 
 ## Array operations
 
