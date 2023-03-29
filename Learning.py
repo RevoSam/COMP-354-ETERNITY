@@ -3,7 +3,7 @@ from tkinter import filedialog as fd
 import math as xMath
 import os
 import csv
-import Functions.StandardDeviation as _SD
+import Functions.standard_deviation as _SD
 
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
