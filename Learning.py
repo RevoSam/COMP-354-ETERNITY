@@ -124,7 +124,7 @@ class Eternity:
             if isinstance(value, int):
                 baground_color = BUTTON_PAD_COLOR
             button = tk.Button(self.self_buttons_frame, text = str(value), bg = baground_color, fg = LABEL_COLOR, font=PAD_FONT_STYLE, borderwidth=0, padx=10, command=lambda x=value: self.add_to_current(x))
-            button.grid(row=grid_loc[0], column=grid_loc[1], sticky=tk.NSEW)
+            button.grid(row=grid_loc[0], column=grid_loc[1], sticky=tk.NSEW, padx=5, pady=5)
             
            
     
@@ -262,9 +262,9 @@ class Eternity:
     def handle_functions_buttons_call(self, *arg):
         labels = ['x', 'n', 'a', 'b']
         self.child_window_result = tk.Toplevel(self.window)
-        self.child_window_result.geometry("550x50")
-        _width = 10
-        self.child_window_result.resizable(0, 0)
+        self.child_window_result.geometry("500x300")
+        _width = 20
+        self.child_window_result.resizable(1, 1)
         self.child_window_result.x = tk.StringVar()
         self.child_window_result.n = tk.StringVar()
         self.child_window_result.a = tk.StringVar()
@@ -275,8 +275,11 @@ class Eternity:
         self.child_window_result.a_input = tk.Entry()
         self.child_window_result.b_input = tk.Entry()
 
-        frame = tk.Frame( self.child_window_result, height = 50, bg = BUTTON_EQUAL_COLOR)
-        frame.pack(expand=True, fill="both")
+        frame_button = tk.Frame( self.child_window_result, height = 250, bg = BUTTON_EQUAL_COLOR)
+        frame_button.pack(expand=True, fill="both", anchor=tk.CENTER)
+        frame = tk.Frame( frame_button, height = 250, bg = BUTTON_EQUAL_COLOR)
+        #frame.pack(expand=True, fill="both", anchor=tk.CENTER)
+        frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         function_name = ""
         for function, functionName in self.functions.items():
             if arg[0] == function:
@@ -284,41 +287,75 @@ class Eternity:
                 break
         self.child_window_result.title("Input for function: " + function_name)
 
+        i = 1
+        for symbol, value in self.special_operations.items():
+            if symbol != "Del":
+                baground_color = BUTTON_OPERATOR_COLOR
+                font_color = LABEL_COLOR
+                button = tk.Button(frame, text = value, bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x=symbol: self.child_add_special_operations(x))
+                button.grid(row = 0, column = i, sticky=tk.W, padx=5, pady=5)
+                i+=1
+        
+        button_sqrt = tk.Button(frame, text = "√", bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x="sqrt": self.child_add_special_operations(x))
+        button_sqrt.grid(row = 0, column = i, sticky=tk.NSEW, padx=5, pady=5)
+        i += 1
+        button_recall = tk.Button(frame, text = "Recall", bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x=function: print("Not Implemented"))
+        button_recall.grid(row = 0, column = i, columnspan = 3, sticky=tk.NSEW, padx=5, pady=5)
 
         if (arg[1] != 0):
             x_label = tk.Label(frame, text="x:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
-            x_label.grid(row=1, column=1, sticky=tk.NSEW, padx=5, pady=5)
+            x_label.grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
 
             self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
-            self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.NSEW, padx=5, pady=5)
+            self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.W, padx=5, pady=5)
         
         if (arg[2] != 0):
             n_label = tk.Label(frame, text="n:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
-            n_label.grid(row=1, column=3, sticky=tk.NSEW, padx=5, pady=5)
+            n_label.grid(row=2, column=1, sticky=tk.W, padx=5, pady=5)
 
             self.child_window_result.n_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.n, width=_width)
-            self.child_window_result.n_input.grid(row=1, column=4, sticky=tk.NSEW, padx=5, pady=5)
+            self.child_window_result.n_input.grid(row=2, column=2, sticky=tk.W, padx=5, pady=5)
         
         if (arg[3] != 0):
             a_label = tk.Label(frame, text="a:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
-            a_label.grid(row=1, column=5, sticky=tk.NSEW, padx=5, pady=5)
+            a_label.grid(row=3, column=1, sticky=tk.W, padx=5, pady=5)
 
             self.child_window_result.a_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.a, width=_width)
-            self.child_window_result.a_input.grid(row=1, column=6, sticky=tk.NSEW, padx=5, pady=5)
+            self.child_window_result.a_input.grid(row=3, column=2, sticky=tk.W, padx=5, pady=5)
 
         if (arg[4] != 0):
             b_label = tk.Label(frame, text="b:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
-            b_label.grid(row=1, column=7, sticky=tk.NSEW, padx=5, pady=5)
+            b_label.grid(row=4, column=1, sticky=tk.W, padx=5, pady=5)
 
-            self.child_window_result.b_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.b, width=_width)
-            self.child_window_result.b_input.grid(row=1, column=8, sticky=tk.NSEW, padx=5, pady=5)
+            self.child_window_result.b_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.b, width=_width, borderwidth = 0)
+            self.child_window_result.b_input.grid(row=4, column=2, sticky=tk.W, padx=5, pady=5)
         
-        frame.rowconfigure(0, weight=1)
-        frame.columnconfigure(0, weight=1)
+        # frame.rowconfigure(0, weight=1)
+        # frame.columnconfigure(0, weight=1)
+
+        # frame.rowconfigure(1, weight=1)
+        # frame.columnconfigure(1, weight=1)
 
          #Order of arguments: x, n, a, b
-        button = tk.Button(frame, text="Submit", command=lambda x = arg[0]: self.execute_function(x))
-        button.grid(row=1, column= 9, padx=5, pady=5,sticky = tk.NSEW)
+        button = tk.Button(frame, text="Submit", command=lambda x = arg[0]: self.execute_function(x), width=20, pady=5)
+        button.grid(row=5, column= 1, columnspan=3, padx=5, pady=5)
+
+    def child_add_special_operations(self, symbol):
+        value = 0
+        entry = self.child_window_result.focus_get()
+        if isinstance(entry, tk.Entry):
+            if symbol == 'e':
+                value = str(xMath.e)
+            if symbol == 'PI':
+                value = str(xMath.pi)
+            if symbol == 'sqrt':
+                if len(entry.get()) > 0:
+                    value = float(entry.get())**0.5
+            entry.delete(0, tk.END)
+            entry.insert(0, value)
+
+        
+        
 
     def execute_function(self, function):
         print("Clicked! " + function)
