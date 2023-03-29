@@ -27,6 +27,24 @@ def parse_string_multi_values(tk_string):
     
 
 # Parse the context of a checkbox for boolean choices?
+#
+
+
+# Parentheses matching function
+def parenthesesMatching(s):
+    stack = []
+    for i in range(len(s)):
+        if s[i] == '(':
+            stack.append(s[i])
+        elif s[i] == ')':
+            if len(stack) == 0:
+                return False
+            else:
+                stack.pop()
+    if len(stack) == 0:
+        return True
+    else:
+        return False
 
 
 
@@ -54,6 +72,7 @@ def parse_string_multi_values_tests():
 
     print("\nAttempt at parsing the string \"I love to eat, 1, salad in the morning.\" :")
     print(parse_string_multi_values("I love to eat, 1, salad in the morning."))
+    
     
 
 # Do the tests

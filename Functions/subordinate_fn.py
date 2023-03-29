@@ -87,18 +87,4 @@ def sum(arraylike):
 
 ## Misc 
     
-# parentheses matching function
-def parenthesesMatching(s):
-    stack = []
-    for i in range(len(s)):
-        if s[i] == '(':
-            stack.append(s[i])
-        elif s[i] == ')':
-            if len(stack) == 0:
-                return False
-            else:
-                stack.pop()
-    if len(stack) == 0:
-        return True
-    else:
-        return False
+
