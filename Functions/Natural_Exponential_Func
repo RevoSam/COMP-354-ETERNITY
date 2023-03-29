@@ -4,7 +4,7 @@
 import math
 
 def natural_exp(a, b, x):
-    return a * pow(b, x)
+    return a * (b**x)
 
 # Example usage
 result = natural_exp(2, 3, 4)  # calculates 2 * 3^4
