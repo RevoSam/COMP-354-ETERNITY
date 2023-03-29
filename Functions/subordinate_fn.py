@@ -52,10 +52,6 @@ def power(x,y):
             result = result * x
     return result
 
-# Return e^z.
-def exp(z):
-   return EULER ** z
-
 
 ## Trigonometry
 
@@ -67,10 +63,6 @@ def sin(z):
    for i in range(0,n,1):
       y = y + ((-1)**i) * (z**(2*i+1)) / factorial(2*i+1)
    return y
-
-# Hyperbolic sine function
-def sinh(x):
-    return (pow(EULER,x) - pow(EULER,-x)) / 2
 
 
 ## Array operations
