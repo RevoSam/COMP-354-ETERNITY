@@ -10,10 +10,11 @@ from tkinter import messagebox
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
 BUTTON_PAD_COLOR = "#FFFFFF"
-BUTTON_OPERATOR_COLOR = "#E7EBEA"
+BUTTON_OPERATOR_COLOR = "#E1E1E1"
 BUTTON_EQUAL_COLOR = "#F19120"
 LABEL_COLOR = "#000000"
 LABEL_SMALL_FONT_STYLE = ("ARIAL", 14)
+LABEL_SMALLER_FONT_STYLE = ("ARIAL", 14)
 LABEL_LARGE_FONT_STYLE = ("ARIAL", 35, "bold")
 PAD_FONT_STYLE = ("Inter", 30)
 
@@ -34,7 +35,7 @@ class Eternity:
 
         #Creating the frames
         self.display_frame = self.initialize_display_frames()
-        self_buttons_frame = self.initialize_buttons_frame()
+        self.buttons_frame = self.initialize_buttons_frame()
 
         #Creating the Labels to show total and current calculation
         self.total = ""
@@ -135,7 +136,7 @@ class Eternity:
         i = 2
         for operator, sign in self.operations.items():
             button = tk.Button(self.self_buttons_frame, text = sign, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=operator: self.append_operation(x))
-            button.grid(row = i, column = 3, sticky=tk.NSEW)
+            button.grid(row = i, column = 3, sticky=tk.NSEW, padx=5, pady=5)
             i+=1
 
     #Initialize the special operations buttons
@@ -144,23 +145,23 @@ class Eternity:
         for symbol, value in self.special_operations.items():
             baground_color = BUTTON_OPERATOR_COLOR
             font_color = LABEL_COLOR
-            button = tk.Button(self.self_buttons_frame, text = value, bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=symbol: self.add_special_operations(x))
-            button.grid(row = 1, column = i, sticky=tk.NSEW)
+            button = tk.Button(self.self_buttons_frame, text = value, bg = baground_color, fg = font_color, font = LABEL_SMALLER_FONT_STYLE, borderwidth = 0, padx=10, pady=20, command=lambda x=symbol: self.add_special_operations(x))
+            button.grid(row = 1, column = i, sticky=tk.NSEW, padx=5, pady=5)
             i+=1
         
-        button = tk.Button(self.self_buttons_frame, text = 'AC', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=self.clear_calculation)
-        button.grid(row = 1, column = i, sticky=tk.NSEW)
+        button = tk.Button(self.self_buttons_frame, text = 'AC', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = LABEL_SMALLER_FONT_STYLE, borderwidth = 0, padx=10, command=self.clear_calculation)
+        button.grid(row = 1, column = i, sticky=tk.NSEW, padx=5, pady=5)
 
     #Initialize the equal button
     def initialize_equal_button(self):
-        button = tk.Button(self.self_buttons_frame, text = '=', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=self.evaluate_current_Calculation)
-        button.grid(row = 4, column = 5, rowspan = 2, sticky=tk.NSEW)
+        button = tk.Button(self.self_buttons_frame, text = '=', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = LABEL_SMALLER_FONT_STYLE, borderwidth = 0, padx=10, command=self.evaluate_current_Calculation)
+        button.grid(row = 4, column = 5, rowspan = 2, sticky=tk.NSEW, padx=5, pady=5)
 
     def initialize_parenthesis(self):
         i = 1
         for operator, symbol in self.parenthesis.items():
-            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=operator: self.append_operation(x))
-            button.grid(row = 3 + i, column = 4, sticky=tk.NSEW)
+            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = LABEL_SMALLER_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=operator: self.append_operation(x))
+            button.grid(row = 3 + i, column = 4, sticky=tk.NSEW, padx=5, pady=5)
             i += 1
     
     def initialize_functions_buttons(self):
@@ -168,18 +169,14 @@ class Eternity:
         span = 2
         _column = 4
         for function, symbol in self.functions.items():
-            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, padx=10, command=lambda x=function: self.functions_buttons_click(x))
-            button.grid(row = 0 + i, column = _column, columnspan = span, sticky=tk.NSEW)
+            button = tk.Button(self.self_buttons_frame, text = symbol, bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = LABEL_SMALLER_FONT_STYLE, borderwidth = 0, padx=10, pady=20, command=lambda x=function: self.functions_buttons_click(x))
+            button.grid(row = 0 + i, column = _column, columnspan = span, sticky=tk.NSEW, padx=5, pady=5)
             i += 1
             if i > 3 and _column == 4:
                 i = 0
                 _column = _column + span
     
     def functions_buttons_click(self, function):
-        #        self.functions = {'Save' : 'Save', 'Gamma': '\u0393\u0028x\u0029', 'ab^n' : 'ab\u207f', 'x_power_n': 'x\u207f',  'Recal' : 'Recall', 'arccos' : 'arccos\u0028x\u0029',
-        #                  'sinh':'sinh\u0028x\u0029','logb':'log\u2090\u0028x\u0029', 'MAD':'MAD', 'sd' : '\u03c3'
-        #                 }
-        #Order of arguments: x, n, a, b
         print(function)
         if function == "ab^n":
             self.handle_functions_buttons_call("ab^n", 0, 1, 1, 1)
@@ -200,7 +197,6 @@ class Eternity:
         
 
     def handle_multiple_inputs(self, callingFunction):
-        i = 1
         self.child_window_result = tk.Toplevel(self.window)
         self.child_window_result.geometry("550x100")
         _width = 50
@@ -218,34 +214,57 @@ class Eternity:
                 break
         self.child_window_result.title("Input for function: " + function_name)
 
-
+        isSample = True
 
         x_label = tk.Label(frame, text="Values seprated by ',':",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
         x_label.grid(row=1, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 
+        self.child_window_result.x = tk.StringVar()
+        self.child_window_result.x.trace('w', self.test)
+
         self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
         self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
 
+        button_calc = tk.Button(frame, text="Calculate", command= lambda:self.calculate_using_inputedValues(isSample, callingFunction))
+        button_calc.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
+
         y_label = tk.Label(frame, text="Or Import a CSV file: ",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
-        y_label.grid(row=2, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
+        y_label.grid(row=3, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 
-        button = tk.Button(frame, text="Import", command= self.open_file_dialogue)
-        button.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
-
-        
-
-        
+        button = tk.Button(frame, text="Import", command = lambda:self.open_file_dialogue(isSample, callingFunction))
+        button.grid(row=3, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
+       
         self.child_window_result.rowconfigure(1, weight=1)
         self.child_window_result.columnconfigure(1, weight=1)
 
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(1, weight=1)
 
+    def test(self, *args):
+        legalCharachters = set("123456789.,")
+        if len(self.child_window_result.x_input.get()) > 0:
+            if not legalCharachters.issuperset(str(self.child_window_result.x_input.get()[-1]).strip()):
+                self.child_window_result.x_input.delete(len(str(self.child_window_result.x_input.get())) - 1, tk.END)
         
+    def calculate_using_inputedValues(self, isSample, callingFunction):
+        input = str(self.child_window_result.x_input.get())
+        array = input.split(',')
+        data_points_floats = [float(i) for i in array]
+        if callingFunction == "MAD":
+                result = specialFunctions.mad(data_points_floats)
+                fnName = "MAD = " + str(result)
+        elif callingFunction == "SD":
+                result = specialFunctions.standard_deviation(data_points_floats, isSample)
+                fnName = "SD = " + str(result)
+        self.total_label.config(text = fnName)
+        self.currentCalculation = str(result)
+        self.update_current()
+        self.child_window_result.destroy()
 
 
 
-    def open_file_dialogue(self):
+    def open_file_dialogue(self, isSample, callingFunction):
+        self.child_window_result.x_input.delete(0, tk.END)
         #Launch the dialogue in the same directory where the application is running
         filepath = fd.askopenfilename(initialdir=os.getcwd(), title="File to import", filetypes=(("CSV", "*.csv"),))
         with open(filepath, 'r') as file:
@@ -256,11 +275,24 @@ class Eternity:
                 for i in range(len(row)):
                     data_points.append(row[i])
             sum = 0
-            for i in range(len(data_points)):
-                sum += int(data_points[i])
+            # for i in range(len(data_points)):
+            #     sum += int(data_points[i])
             #print("AVG: " + str((sum / len(data_points))))
             data_points_floats = [float(i) for i in data_points]
-            print(specialFunctions.mad(data_points_floats))
+            #print(specialFunctions.mad(data_points_floats))
+            fnName = ""
+            result = 0.0
+            if callingFunction == "MAD":
+                result = specialFunctions.mad(data_points_floats)
+                fnName = "MAD = " + str(result)
+            elif callingFunction == "SD":
+                result = specialFunctions.standard_deviation(data_points_floats, isSample)
+                fnName = "SD = " + str(result)
+            self.total_label.config(text = fnName)
+            self.currentCalculation = str(result)
+            self.update_current()
+            self.child_window_result.destroy()
+
             #print(data_points)
 
 
@@ -390,12 +422,6 @@ class Eternity:
             self.update_current()
         if function == "logb":
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
-        if function == "MAD":
-            self.total_label.config(text = "MAD(" + self.child_window_result.x + ")")
-            # self.currentCalculation = str(specialFunctions.sinh(float(self.child_window_result.x)))
-            # self.update_current()
-        if function == "sd":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
         
         self.child_window_result.destroy()
 
@@ -458,7 +484,8 @@ class Eternity:
             self.currentCalculation = str(eval(self.total))
             self.total = ""
         except Exception as error:
-            self.currentCalculation = "Error: " + str(error)
+            self.currentCalculation = "Error: "
+            #tk.Message(error)
         finally:
             self.update_current()
 
