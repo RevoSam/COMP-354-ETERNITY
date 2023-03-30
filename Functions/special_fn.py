@@ -163,7 +163,7 @@ def gamma(z):
     sum += p[0]
     y = subordinateFunctions.sqrt(2.0*subordinateFunctions.PI)*sum*base**(z + 0.5)*subordinateFunctions.exp(-base)
 
-  return y
+  return round(y, 9)
 
 
 """------------------------------
@@ -171,7 +171,7 @@ ARCCOS
 Christopher Lopez, 40199547
 ------------------------------"""
     
-def arccos(x, EPSILON):
+def arccos(x):
     if x == 1:
         return 0
     elif x == -1:
@@ -182,7 +182,7 @@ def arccos(x, EPSILON):
     upper = 3.141592653589793
     while True:
         mid = (lower + upper) / 2
-        if abs(subordinateFunctions.cosine(mid) - x) <= EPSILON:
+        if abs(subordinateFunctions.cosine(mid) - x) <= subordinateFunctions.EPSILON:
             return mid
         elif subordinateFunctions.cosine(mid) > x:
             lower = mid

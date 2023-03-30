@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import filedialog as fd
-import math as xMath
 import os
 import csv
 import Functions.special_fn as specialFunctions
+import Functions.subordinate_fn as subordinateFunctions
+from tkinter import messagebox
+
 
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
@@ -231,6 +233,8 @@ class Eternity:
         button.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
 
         
+
+        
         self.child_window_result.rowconfigure(1, weight=1)
         self.child_window_result.columnconfigure(1, weight=1)
 
@@ -339,7 +343,7 @@ class Eternity:
         # frame.columnconfigure(1, weight=1)
 
          #Order of arguments: x, n, a, b
-        button = tk.Button(frame, text="Submit", command=lambda x = arg[0]: self.execute_function(x), width=20, pady=5)
+        button = tk.Button(frame, text="Calculate", command=lambda x = arg[0]: self.execute_function(x), width=20, pady=5)
         button.grid(row=5, column= 1, columnspan=3, padx=5, pady=5)
 
     def child_add_special_operations(self, symbol):
@@ -347,17 +351,14 @@ class Eternity:
         entry = self.child_window_result.focus_get()
         if isinstance(entry, tk.Entry):
             if symbol == 'e':
-                value = str(xMath.e)
+                value = str(subordinateFunctions.EULER)
             if symbol == 'PI':
-                value = str(xMath.pi)
+                value = str(subordinateFunctions.PI)
             if symbol == 'sqrt':
                 if len(entry.get()) > 0:
-                    value = float(entry.get())**0.5
+                    value = subordinateFunctions.sqrt(float(entry.get()))
             entry.delete(0, tk.END)
             entry.insert(0, value)
-
-        
-        
 
     def execute_function(self, function):
         print("Clicked! " + function)
@@ -368,19 +369,31 @@ class Eternity:
 
         #Here is where we will call our functions
         if function == "ab^n":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+            self.total_label.config(text = self.child_window_result.a + "*" + self.child_window_result.b + "**" + self.child_window_result.n)
+            self.currentCalculation = str(specialFunctions.natural_exp(float(self.child_window_result.a), float(self.child_window_result.b), float(self.child_window_result.n)))
+            self.update_current()
         if function == "Gamma":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+            self.total_label.config(text = "Γ(" + self.child_window_result.x + ")")
+            self.currentCalculation = str(specialFunctions.gamma(float(self.child_window_result.x)))
+            self.update_current()
         if function == "x_power_n":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+            self.total_label.config(text = self.child_window_result.x + "**" + self.child_window_result.n)
+            self.currentCalculation = str(specialFunctions.power(float(self.child_window_result.x), float(self.child_window_result.n)))
+            self.update_current()
         if function == "arccos":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+            self.total_label.config(text = "arccos(" + self.child_window_result.x + ")")
+            self.currentCalculation = str(specialFunctions.arccos(float(self.child_window_result.x)))
+            self.update_current()
         if function == "sinh":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+            self.total_label.config(text = "sinh(" + self.child_window_result.x + ")")
+            self.currentCalculation = str(specialFunctions.sinh(float(self.child_window_result.x)))
+            self.update_current()
         if function == "logb":
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
         if function == "MAD":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
+            self.total_label.config(text = "MAD(" + self.child_window_result.x + ")")
+            # self.currentCalculation = str(specialFunctions.sinh(float(self.child_window_result.x)))
+            # self.update_current()
         if function == "sd":
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
         
@@ -396,9 +409,9 @@ class Eternity:
         if addedvalue == 'Del':
             self.currentCalculation = self.currentCalculation[0:len(self.currentCalculation) - 1]
         if addedvalue == 'e':
-            self.currentCalculation = str(xMath.e)
+            self.currentCalculation = str(subordinateFunctions.EULER)
         if addedvalue == 'PI':
-            self.currentCalculation = str(xMath.pi)
+            self.currentCalculation = str(subordinateFunctions.PI)
         self.update_current()
 
     #Add the number to the current Calculation

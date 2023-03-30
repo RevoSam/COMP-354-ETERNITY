@@ -58,7 +58,7 @@ def sin(z):
       y = y + ((-1)**i) * (z**(2*i+1)) / factorial(2*i+1)
    return y
 
-def cosine(x, EPSILON):
+def cosine(x):
     result = 0
     n = 0
     while True:
