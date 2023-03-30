@@ -256,7 +256,7 @@ class Eternity:
                 sum += int(data_points[i])
             #print("AVG: " + str((sum / len(data_points))))
             data_points_floats = [float(i) for i in data_points]
-            print(specialFunctions.standard_deviation(data_points_floats, True))
+            print(specialFunctions.mad(data_points_floats))
             #print(data_points)
 
 

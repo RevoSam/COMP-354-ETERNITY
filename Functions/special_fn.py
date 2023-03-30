@@ -57,6 +57,28 @@ def standard_deviation_tests():
 
 
 """------------------------------
+Mean Absolute Deviation
+Sami NAJIM, 21289640
+------------------------------"""
+
+def mad(data_points):
+    
+    sum_data = subordinateFunctions.sum(data_points)
+    mean = sum_data / len(data_points)
+    
+    N = len(data_points)
+    
+    sum_abs = 0
+    for point in data_points:
+        sum_abs += subordinateFunctions.abs(point - mean)
+    mad = sum_abs / N
+    
+    # Here for testing purposes. Comment out during implementation.
+    print("Sample size {0}, Avg: {1}, MAD: {2}", N, mean, mad)
+    
+    return mad
+
+"""------------------------------
 AB^X
 Yirun Liu 40067857
 ------------------------------"""
