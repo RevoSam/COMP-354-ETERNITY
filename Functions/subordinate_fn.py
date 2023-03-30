@@ -83,4 +83,7 @@ def sum(arraylike):
 
 ## Misc 
     
-
+def main():
+    pass
+if __name__ == "__main__":
+    main()

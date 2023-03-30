@@ -1,5 +1,5 @@
 
-from subordinate_fn import *
+import Functions.subordinate_fn as subordinateFunctions
 
 """------------------------------
 STANDARD DEVIATION
@@ -11,7 +11,7 @@ def standard_deviation(data_points, sample_sd):
     ## Should we convert the data_points list to an array just to be safe?
     ## Might need to change len vs size depending on the format they'll come in.
     
-    sum_data = sum(data_points)
+    sum_data = subordinateFunctions.sum(data_points)
     mean = sum_data / len(data_points)
     
     N = len(data_points)
@@ -22,8 +22,8 @@ def standard_deviation(data_points, sample_sd):
     
     sum_diff = 0
     for point in data_points:
-        sum_diff += power(point - mean, 2)
-    sd = sqrt(sum_diff / N)
+        sum_diff += (point - mean)**2
+    sd = subordinateFunctions.sqrt(sum_diff / N)
     
     # Here for testing purposes. Comment out during implementation.
     print("{0} standard deviation: {1}.".format(sd_type, sd))
@@ -76,7 +76,7 @@ Chuanqi Mo
 
 # hyperbolic sine function
 def sinh(x):
-    return (exp(x) - exp(-x)) / 2
+    return (subordinateFunctions.exp(x) - subordinateFunctions.exp(-x)) / 2
 
 # power function x^y
 def power(x,y):
@@ -129,7 +129,7 @@ def gamma(z):
 
   if (z < 0.5):
     # Euler's reflection formula
-    y = PI/(sin(PI*z)*gamma(1.0 - z))
+    y = subordinateFunctions.PI/(subordinateFunctions.sin(subordinateFunctions.PI*z)*gamma(1.0 - z))
   else:
     z = z - 1.0
     base = z + g + 0.5
@@ -139,7 +139,7 @@ def gamma(z):
         sum += p[int(i)]/ (z + i)
         i -= 1
     sum += p[0]
-    y = sqrt(2.0*PI)*sum*base**(z + 0.5)*exp(-base)
+    y = subordinateFunctions.sqrt(2.0*subordinateFunctions.PI)*sum*base**(z + 0.5)*subordinateFunctions.exp(-base)
 
   return y
 
@@ -160,9 +160,15 @@ def arccos(x, EPSILON):
     upper = 3.141592653589793
     while True:
         mid = (lower + upper) / 2
-        if abs(cosine(mid) - x) <= EPSILON:
+        if abs(subordinateFunctions.cosine(mid) - x) <= EPSILON:
             return mid
-        elif cosine(mid) > x:
+        elif subordinateFunctions.cosine(mid) > x:
             lower = mid
         else:
             upper = mid
+
+
+def main():
+    pass
+if __name__ == "__main__":
+    main()

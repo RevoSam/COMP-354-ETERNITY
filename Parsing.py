@@ -73,8 +73,11 @@ def parse_string_multi_values_tests():
     print("\nAttempt at parsing the string \"I love to eat, 1, salad in the morning.\" :")
     print(parse_string_multi_values("I love to eat, 1, salad in the morning."))
     
-    
 
-# Do the tests
-parse_string_single_value_tests()
-parse_string_multi_values_tests()
+def main():
+    pass
+    # Do the tests 
+    parse_string_single_value_tests()
+    parse_string_multi_values_tests()
+if __name__ == "__main__":
+    main()

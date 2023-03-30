@@ -34,3 +34,8 @@ def parenthesesMatching(s):
 # print(power(2,10))
 # print(sinh(1.0))
 # print(parenthesesMatching('((a+b)*(c+d)))'))
+
+def main():
+    pass
+if __name__ == "__main__":
+    main()

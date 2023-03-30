@@ -3,7 +3,7 @@ from tkinter import filedialog as fd
 import math as xMath
 import os
 import csv
-import Functions.standard_deviation as _SD
+import Functions.special_fn as specialFunctions
 
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
@@ -254,7 +254,9 @@ class Eternity:
             sum = 0
             for i in range(len(data_points)):
                 sum += int(data_points[i])
-            print("AVG: " + str((sum / len(data_points))))
+            #print("AVG: " + str((sum / len(data_points))))
+            data_points_floats = [float(i) for i in data_points]
+            print(specialFunctions.standard_deviation(data_points_floats, True))
             #print(data_points)
 
 
@@ -465,5 +467,6 @@ class Eternity:
 if __name__ == "__main__":
     myEternity = Eternity()
     myEternity.run()
+
 
 
