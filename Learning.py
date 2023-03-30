@@ -6,6 +6,8 @@ import Functions.special_fn as specialFunctions
 import Functions.subordinate_fn as subordinateFunctions
 from tkinter import messagebox
 
+from Parsing import parse_string_multi_values
+
 
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
@@ -202,23 +204,16 @@ class Eternity:
     def handle_multiple_inputs(self, callingFunction):
         i = 1
         self.child_window_result = tk.Toplevel(self.window)
-        self.child_window_result.geometry("550x100")
+        self.child_window_result.geometry("550x150")
         _width = 50
         self.child_window_result.resizable(0, 0)
         self.child_window_result.x_input = tk.Entry()
-
         self.child_window_result.x = tk.StringVar()
         
         frame = tk.Frame( self.child_window_result, height = 50, bg = BUTTON_EQUAL_COLOR)
         frame.pack(expand=True, fill="both")
-        function_name = ""
-        for function, functionName in self.functions.items():
-            if callingFunction == function:
-                function_name = str(functionName)
-                break
-        self.child_window_result.title("Input for function: " + function_name)
-
-
+        
+        self.child_window_result.title("Input for function: " + callingFunction)
 
         x_label = tk.Label(frame, text="Values seprated by ',':",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
         x_label.grid(row=1, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
@@ -226,14 +221,16 @@ class Eternity:
         self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
         self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
 
+
+
         y_label = tk.Label(frame, text="Or Import a CSV file: ",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
         y_label.grid(row=2, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 
         button = tk.Button(frame, text="Import", command= self.open_file_dialogue)
         button.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
 
-        
-
+        button = tk.Button(frame, text="Calculate", command=lambda x = str(self.child_window_result.x).split(",") : self.execute_function(callingFunction), width=20, pady=5)
+        button.grid(row=3, column= 1, columnspan=3, padx=5, pady=5)
         
         self.child_window_result.rowconfigure(1, weight=1)
         self.child_window_result.columnconfigure(1, weight=1)
@@ -241,11 +238,7 @@ class Eternity:
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(1, weight=1)
 
-        
-
-
-
-    def open_file_dialogue(self):
+    def open_file_dialogue(self, callingFunction):
         #Launch the dialogue in the same directory where the application is running
         filepath = fd.askopenfilename(initialdir=os.getcwd(), title="File to import", filetypes=(("CSV", "*.csv"),))
         with open(filepath, 'r') as file:
@@ -260,10 +253,13 @@ class Eternity:
                 sum += int(data_points[i])
             #print("AVG: " + str((sum / len(data_points))))
             data_points_floats = [float(i) for i in data_points]
-            print(specialFunctions.mad(data_points_floats))
-            #print(data_points)
-
-
+            if (callingFunction == 'MAD'):
+                self.currentCalculation = str(specialFunctions.mad(data_points_floats))
+            elif (callingFunction == 'SD'):
+                self.currentCalculation = str(specialFunctions.standard_deviation(data_points_floats), True)
+            # self.total_label.config(text = callingFunction + "(" + str(data_points) + ")")
+            self.update_current()
+            self.child_window_result.destroy()
 
     def handle_functions_buttons_call(self, *arg):
         labels = ['x', 'n', 'a', 'b']
@@ -362,10 +358,13 @@ class Eternity:
 
     def execute_function(self, function):
         print("Clicked! " + function)
-        self.child_window_result.x = self.child_window_result.x_input.get()
-        self.child_window_result.n = self.child_window_result.n_input.get()
-        self.child_window_result.a = self.child_window_result.a_input.get()
-        self.child_window_result.b = self.child_window_result.b_input.get()
+        if (function == 'MAD' or 'SD'):
+            self.child_window_result.x = self.child_window_result.x_input.get()
+        else:
+            self.child_window_result.x = self.child_window_result.x_input.get()
+            self.child_window_result.n = self.child_window_result.n_input.get()
+            self.child_window_result.a = self.child_window_result.a_input.get()
+            self.child_window_result.b = self.child_window_result.b_input.get()
 
         #Here is where we will call our functions
         if function == "ab^n":
@@ -392,11 +391,12 @@ class Eternity:
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
         if function == "MAD":
             self.total_label.config(text = "MAD(" + self.child_window_result.x + ")")
-            # self.currentCalculation = str(specialFunctions.sinh(float(self.child_window_result.x)))
-            # self.update_current()
-        if function == "sd":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
-        
+            self.currentCalculation = str(specialFunctions.mad(parse_string_multi_values(self.child_window_result.x)))
+            self.update_current()
+        if function == "SD":
+            self.total_label.config(text = "SD(" + self.child_window_result.x + ")")
+            self.currentCalculation = str(specialFunctions.standard_deviation(parse_string_multi_values(self.child_window_result.x), True))
+            self.update_current()
         self.child_window_result.destroy()
 
     
