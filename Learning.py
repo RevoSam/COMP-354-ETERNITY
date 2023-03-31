@@ -494,12 +494,8 @@ class Eternity:
         button_del.grid(row=2, column=1, padx=5, pady=5,sticky = tk.E + tk.W)
         
         # create a recall button, which behaves differently if we recall to the main window or a child window
-        if (main_or_child == "main"):
-            button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values, main_or_child, entry))
-            button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
-        if (main_or_child == "child"):
-            button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values, main_or_child, entry))
-            button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
+        button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values, main_or_child, entry))
+        button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
 
     # method to remove a certain saved value
     def remove_saved_value(self, listbox):
