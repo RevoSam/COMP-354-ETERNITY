@@ -6,6 +6,8 @@ import Functions.special_fn as specialFunctions
 import Functions.subordinate_fn as subordinateFunctions
 from tkinter import messagebox
 
+from Parsing import parse_string_multi_values
+
 
 #Colors
 DISPLAY_LABEL_COLOR = "#E7EBEA"
@@ -198,11 +200,10 @@ class Eternity:
 
     def handle_multiple_inputs(self, callingFunction):
         self.child_window_result = tk.Toplevel(self.window)
-        self.child_window_result.geometry("550x100")
+        self.child_window_result.geometry("550x150")
         _width = 50
         self.child_window_result.resizable(0, 0)
         self.child_window_result.x_input = tk.Entry()
-
         self.child_window_result.x = tk.StringVar()
         
         frame = tk.Frame( self.child_window_result, height = 50, bg = BUTTON_EQUAL_COLOR)
@@ -394,10 +395,13 @@ class Eternity:
 
     def execute_function(self, function):
         print("Clicked! " + function)
-        self.child_window_result.x = self.child_window_result.x_input.get()
-        self.child_window_result.n = self.child_window_result.n_input.get()
-        self.child_window_result.a = self.child_window_result.a_input.get()
-        self.child_window_result.b = self.child_window_result.b_input.get()
+        if (function == 'MAD' or 'SD'):
+            self.child_window_result.x = self.child_window_result.x_input.get()
+        else:
+            self.child_window_result.x = self.child_window_result.x_input.get()
+            self.child_window_result.n = self.child_window_result.n_input.get()
+            self.child_window_result.a = self.child_window_result.a_input.get()
+            self.child_window_result.b = self.child_window_result.b_input.get()
 
         #Here is where we will call our functions
         if function == "ab^n":

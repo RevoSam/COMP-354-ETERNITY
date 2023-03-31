@@ -33,6 +33,8 @@ def factorial(z):
       return None
    if (z == 1):
       return z
+   if (z == 0):
+      return 1
    else:
       return z*factorial(z-1)
 
@@ -59,15 +61,12 @@ def sin(z):
    return y
 
 def cosine(x):
-    result = 0
-    n = 0
-    while True:
-        term = ((-1) * n) * (x * (2 * n)) / factorial(2 * n)
-        result += term
-        if abs(term) <= EPSILON:
-            break
-        n += 1
-    return result
+   n = 75 #precision
+   result = 0
+   for i in range(0,n,1):
+      term = (((-1) ** i) * (x ** (2 * i))) / factorial(2 * i)
+      result += term
+   return result
 
 ## Array operations
 
@@ -77,9 +76,6 @@ def sum(arraylike):
     for item in arraylike:
         sum += item
     return sum
-
-
-
 
 ## Misc 
     

@@ -87,8 +87,8 @@ def natural_exp(a, b, x):
     return a * (b**x)
 
 # Example usage
-result = natural_exp(2, 3, 4)  # calculates 2 * 3^4
-print(result)  # prints 162
+# result = natural_exp(2, 3, 4)  # calculates 2 * 3^4
+# print(result)  # prints 162
 
 
 """------------------------------
@@ -175,11 +175,11 @@ def arccos(x):
     if x == 1:
         return 0
     elif x == -1:
-        return 3.141592653589793
+        return subordinateFunctions.PI
     elif x < -1 or x > 1:
         raise ValueError("x must be between -1 and 1")
     lower = 0
-    upper = 3.141592653589793
+    upper = subordinateFunctions.PI
     while True:
         mid = (lower + upper) / 2
         if abs(subordinateFunctions.cosine(mid) - x) <= subordinateFunctions.EPSILON:
@@ -188,7 +188,6 @@ def arccos(x):
             lower = mid
         else:
             upper = mid
-
 
 def main():
     pass
