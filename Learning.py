@@ -6,7 +6,7 @@ import Functions.special_fn as specialFunctions
 import Functions.subordinate_fn as subordinateFunctions
 from tkinter import messagebox
 
-from Parsing import parse_string_multi_values
+from Parsing import convert_str_to_num, parse_string_multi_values
 
 
 #Colors
@@ -22,12 +22,17 @@ PAD_FONT_STYLE = ("Inter", 30)
 
 
 class Eternity:
-    def __init__(self):
+    
+    """---------------------------------------------------------------------------------------------
+    INITIALIZATIONS
+    ---------------------------------------------------------------------------------------------"""
 
+    def __init__(self):
         self.start = True
         self.window = tk.Tk()
         self.child_window_result = ""
         self.destroy_child = False
+        self.recall_window = ""
 
         #set the size of the window
         self.window.geometry("700x500")
@@ -43,6 +48,7 @@ class Eternity:
         self.total = ""
         self.currentCalculation = ""
         self.total_label, self.current_label = self.initialize_display_labels()
+        self.savedValues = []
 
         #Initialize the pad buttons
         self.pad_values = {
@@ -63,8 +69,6 @@ class Eternity:
             '√': (5,0)
         }
 
-
-
         #list of regular operations
         self.operations = {'+':'+', '-':'-', '*':'\u00d7', '/':'\u00F7'}
         #list of special operators
@@ -72,10 +76,9 @@ class Eternity:
         #list of Parenthesis
         self.parenthesis = {'(' : '\u0028', ')' : '\u0029'}
         #list of functions
-        self.functions = {'Save' : 'Save', 'Gamma': '\u0393\u0028x\u0029', 'ab^n' : 'ab\u207f', 'x_power_n': 'x\u207f',  'Recal' : 'Recall', 'arccos' : 'arccos\u0028x\u0029',
+        self.functions = {'Save' : 'Save', 'Gamma': '\u0393\u0028x\u0029', 'ab^n' : 'ab\u207f', 'x_power_n': 'x\u207f',  'Recall' : 'Recall', 'arccos' : 'arccos\u0028x\u0029',
                           'sinh':'sinh\u0028x\u0029','logb':'log\u2090\u0028x\u0029', 'MAD':'MAD', 'sd' : '\u03c3'
                           }
-
 
         #Initialize the buttons frame
         self.self_buttons_frame = self.initialize_buttons_frame()
@@ -131,8 +134,6 @@ class Eternity:
             button = tk.Button(self.self_buttons_frame, text = str(value), bg = baground_color, fg = LABEL_COLOR, font=PAD_FONT_STYLE, borderwidth=0, padx=10, command=lambda x=value: self.add_to_current(x))
             button.grid(row=grid_loc[0], column=grid_loc[1], sticky=tk.NSEW, padx=5, pady=5)
             
-           
-    
     #Initialize the operations buttons
     def initialize_operators_button(self):
         i = 2
@@ -177,7 +178,11 @@ class Eternity:
             if i > 3 and _column == 4:
                 i = 0
                 _column = _column + span
-    
+
+    """---------------------------------------------------------------------------------------------
+    HANDLE BUTTONS CLICK
+    ---------------------------------------------------------------------------------------------"""
+
     def functions_buttons_click(self, function):
         print(function)
         if function == "ab^n":
@@ -196,7 +201,17 @@ class Eternity:
             self.handle_multiple_inputs("MAD")
         if function == "sd":
             self.handle_multiple_inputs("SD")
-        
+        if function == "Save":
+            self.save_results(self.currentCalculation)
+        if function == "Recall":
+            if len(self.savedValues) > 0:
+                self.recall_results()
+            else:
+                messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
+
+    """---------------------------------------------------------------------------------------------
+    CHILD WINDOW FOR MAD/SD FUNCTIONS
+    ---------------------------------------------------------------------------------------------"""
 
     def handle_multiple_inputs(self, callingFunction):
         self.child_window_result = tk.Toplevel(self.window)
@@ -235,9 +250,6 @@ class Eternity:
 
         button = tk.Button(frame, text="Import", command = lambda:self.open_file_dialogue(isSample, callingFunction))
         button.grid(row=3, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
-       
-        self.child_window_result.rowconfigure(1, weight=1)
-        self.child_window_result.columnconfigure(1, weight=1)
 
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(1, weight=1)
@@ -262,8 +274,6 @@ class Eternity:
         self.currentCalculation = str(result)
         self.update_current()
         self.child_window_result.destroy()
-
-
 
     def open_file_dialogue(self, isSample, callingFunction):
         self.child_window_result.x_input.delete(0, tk.END)
@@ -297,7 +307,9 @@ class Eternity:
 
             #print(data_points)
 
-
+    """---------------------------------------------------------------------------------------------
+    CHILD WINDOW FOR ARCCOS/SINH(X)/GAMMA/X^Y/AB^X/LOGB(X)
+    ---------------------------------------------------------------------------------------------"""
 
     def handle_functions_buttons_call(self, *arg):
         labels = ['x', 'n', 'a', 'b']
@@ -390,9 +402,14 @@ class Eternity:
                 value = str(subordinateFunctions.PI)
             if symbol == 'sqrt':
                 if len(entry.get()) > 0:
-                    value = subordinateFunctions.sqrt(float(entry.get()))
+                    value = subordinateFunctions.sqrt(convert_str_to_num(entry.get()))
             entry.delete(0, tk.END)
             entry.insert(0, value)
+
+
+    """---------------------------------------------------------------------------------------------
+    EXECUTE SPECIAL FUNCTIONS
+    ---------------------------------------------------------------------------------------------"""
 
     def execute_function(self, function):
         print("Clicked! " + function)
@@ -407,33 +424,92 @@ class Eternity:
         #Here is where we will call our functions
         if function == "ab^n":
             self.total_label.config(text = self.child_window_result.a + "*" + self.child_window_result.b + "**" + self.child_window_result.n)
-            self.currentCalculation = str(specialFunctions.natural_exp(float(self.child_window_result.a), float(self.child_window_result.b), float(self.child_window_result.n)))
+            self.currentCalculation = str(specialFunctions.natural_exp(convert_str_to_num(self.child_window_result.a), convert_str_to_num(self.child_window_result.b), convert_str_to_num(self.child_window_result.n)))
             self.update_current()
         if function == "Gamma":
             self.total_label.config(text = "Γ(" + self.child_window_result.x + ")")
-            self.currentCalculation = str(specialFunctions.gamma(float(self.child_window_result.x)))
+            self.currentCalculation = str(specialFunctions.gamma(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
         if function == "x_power_n":
             self.total_label.config(text = self.child_window_result.x + "**" + self.child_window_result.n)
-            self.currentCalculation = str(specialFunctions.power(float(self.child_window_result.x), float(self.child_window_result.n)))
+            self.currentCalculation = str(specialFunctions.power(convert_str_to_num(self.child_window_result.x), convert_str_to_num(self.child_window_result.n)))
             self.update_current()
         if function == "arccos":
             self.total_label.config(text = "arccos(" + self.child_window_result.x + ")")
-            self.currentCalculation = str(specialFunctions.arccos(float(self.child_window_result.x)))
+            self.currentCalculation = str(specialFunctions.arccos(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
         if function == "sinh":
             self.total_label.config(text = "sinh(" + self.child_window_result.x + ")")
-            self.currentCalculation = str(specialFunctions.sinh(float(self.child_window_result.x)))
+            self.currentCalculation = str(specialFunctions.sinh(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
         if function == "logb":
             print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
         
         self.child_window_result.destroy()
 
-    
+    """---------------------------------------------------------------------------------------------
+    SAVE/RECALL OPERATIONS
+    ---------------------------------------------------------------------------------------------"""
+        
+    def save_results(self, currentCalculation):
+        if (len(self.savedValues) >= 5):
+            self.savedValues = self.savedValues[1:]
+        if currentCalculation != "":
+            self.savedValues.append(convert_str_to_num((currentCalculation)))
+        else:
+            messagebox.showerror("Save Error", "Error: There's no value to save!")
+
+    def recall_results(self):
+        print(self.savedValues)
+        self.recall_window = tk.Toplevel(self.window)
+        self.recall_window.geometry("235x280")
+        self.recall_window.grab_set()
+        self.recall_window.resizable(0, 0)
+
+        frame = tk.Frame(self.recall_window, height = 50, bg = BUTTON_EQUAL_COLOR)
+        frame.pack(expand=True, fill="both")
+        self.recall_window.title("Recall")
+
+        listbox_saved_values = tk.Listbox(frame, selectmode=tk.SINGLE, font=LABEL_SMALLER_FONT_STYLE)
+        listbox_saved_values.grid(row=1, column=1, columnspan=2, sticky=tk.E + tk.W, padx=5, pady=5)
+        
+        for value in self.savedValues:
+            listbox_saved_values.insert(tk.END, value)
+        
+        listbox_saved_values.select_set(0)
+  
+        button_del = tk.Button(frame, text="Delete", command=lambda:self.remove_saved_value(listbox_saved_values))
+        button_del.grid(row=2, column=1, padx=5, pady=5,sticky = tk.E + tk.W)
+        
+        button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values))
+        button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
+
+    def remove_saved_value(self, listbox):
+        selected_entry = listbox.curselection()
+        if (len(selected_entry) == 0):
+            messagebox.showerror("Delete Error", "Error: There is no saved result to delete!")
+            self.recall_window.destroy()
+        selected_value = listbox.get(selected_entry[0])
+        listbox.delete(selected_entry)
+        listbox.select_set(0)
+        self.savedValues.remove(selected_value)
+
+    def recall_saved_value(self, listbox):
+        selected_entry = listbox.curselection()
+        if (len(selected_entry) == 0):
+            messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
+            self.recall_window.destroy()
+        selected_value = listbox.get(selected_entry[0])
+        print([selected_value])
+        self.add_to_current(convert_str_to_num(selected_value))
+        self.recall_window.destroy()
+
+    """---------------------------------------------------------------------------------------------
+    OTHER CALCULATOR OPERATIONS
+    ---------------------------------------------------------------------------------------------"""
+
     def clear_variables(self):
         self.child_window_result = ""
-
 
     def add_special_operations(self, addedvalue):
         #        self.special_operations = {'Del':'\u2190', 'e':'\u2107', 'PI': '\u03c0'}
@@ -504,9 +580,15 @@ class Eternity:
         for operator in self.operations:
             self.window.bind(operator, lambda event, operatation = operator: self.append_operation(operatation))
 
-    #Run method
+
+    """---------------------------------------------------------------------------------------------
+    RUN CALCULATOR
+    ---------------------------------------------------------------------------------------------"""
+    
     def run(self):
         self.window.mainloop()
+
+
 
 
 if __name__ == "__main__":

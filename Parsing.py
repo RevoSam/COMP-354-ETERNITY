@@ -73,6 +73,11 @@ def parse_string_multi_values_tests():
     print("\nAttempt at parsing the string \"I love to eat, 1, salad in the morning.\" :")
     print(parse_string_multi_values("I love to eat, 1, salad in the morning."))
     
+def convert_str_to_num(str):
+    try:
+        return int(str)
+    except ValueError:
+        return float(str)
 
 def main():
     pass
