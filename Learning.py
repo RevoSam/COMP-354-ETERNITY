@@ -201,6 +201,7 @@ class Eternity:
     def handle_multiple_inputs(self, callingFunction):
         self.child_window_result = tk.Toplevel(self.window)
         self.child_window_result.geometry("550x150")
+        self.child_window_result.grab_set()
         _width = 50
         self.child_window_result.resizable(0, 0)
         self.child_window_result.x_input = tk.Entry()
