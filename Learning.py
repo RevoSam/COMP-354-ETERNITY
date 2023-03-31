@@ -180,7 +180,7 @@ class Eternity:
                 _column = _column + span
 
     """---------------------------------------------------------------------------------------------
-    HANDLE BUTTONS CLICK
+    HANDLE BUTTONS CLICK FOR SPECIAL FUNCTIONS
     ---------------------------------------------------------------------------------------------"""
 
     def functions_buttons_click(self, function):
@@ -205,7 +205,7 @@ class Eternity:
             self.save_results(self.currentCalculation)
         if function == "Recall":
             if len(self.savedValues) > 0:
-                self.recall_results()
+                self.recall_results("main")
             else:
                 messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
 
@@ -341,7 +341,7 @@ class Eternity:
 
         i = 1
         for symbol, value in self.special_operations.items():
-            if symbol != "Del":
+            if (symbol != "Del" and function_name != "arccos"):
                 baground_color = BUTTON_OPERATOR_COLOR
                 font_color = LABEL_COLOR
                 button = tk.Button(frame, text = value, bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x=symbol: self.child_add_special_operations(x))
@@ -351,7 +351,7 @@ class Eternity:
         button_sqrt = tk.Button(frame, text = "√", bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x="sqrt": self.child_add_special_operations(x))
         button_sqrt.grid(row = 0, column = i, sticky=tk.NSEW, padx=5, pady=5)
         i += 1
-        button_recall = tk.Button(frame, text = "Recall", bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x=function: print("Not Implemented"))
+        button_recall = tk.Button(frame, text = "Recall", bg = BUTTON_OPERATOR_COLOR, fg = LABEL_COLOR, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x="recall": self.child_add_special_operations(x))
         button_recall.grid(row = 0, column = i, columnspan = 3, sticky=tk.NSEW, padx=5, pady=5)
 
         if (arg[1] != 0):
@@ -360,6 +360,7 @@ class Eternity:
 
             self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
             self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.W, padx=5, pady=5)
+            self.child_window_result.x_input.focus()
         
         if (arg[2] != 0):
             n_label = tk.Label(frame, text="n:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
@@ -367,6 +368,8 @@ class Eternity:
 
             self.child_window_result.n_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.n, width=_width)
             self.child_window_result.n_input.grid(row=2, column=2, sticky=tk.W, padx=5, pady=5)
+            if (arg[1] == 0):
+                self.child_window_result.n_input.focus()
         
         if (arg[3] != 0):
             a_label = tk.Label(frame, text="a:",  fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
@@ -385,13 +388,11 @@ class Eternity:
         # frame.rowconfigure(0, weight=1)
         # frame.columnconfigure(0, weight=1)
 
-        # frame.rowconfigure(1, weight=1)
-        # frame.columnconfigure(1, weight=1)
-
          #Order of arguments: x, n, a, b
         button = tk.Button(frame, text="Calculate", command=lambda x = arg[0]: self.execute_function(x), width=20, pady=5)
         button.grid(row=5, column= 1, columnspan=3, padx=5, pady=5)
 
+    # input e/pi/square root/recall values in current textbox
     def child_add_special_operations(self, symbol):
         value = 0
         entry = self.child_window_result.focus_get()
@@ -403,6 +404,9 @@ class Eternity:
             if symbol == 'sqrt':
                 if len(entry.get()) > 0:
                     value = subordinateFunctions.sqrt(convert_str_to_num(entry.get()))
+            if symbol == "recall":
+                value = self.recall_results("child", entry)
+                return
             entry.delete(0, tk.END)
             entry.insert(0, value)
 
@@ -411,6 +415,7 @@ class Eternity:
     EXECUTE SPECIAL FUNCTIONS
     ---------------------------------------------------------------------------------------------"""
 
+    # method to perform calculations for special functions
     def execute_function(self, function):
         print("Clicked! " + function)
         if (function == "MAD" or function == "SD"):
@@ -450,58 +455,80 @@ class Eternity:
     """---------------------------------------------------------------------------------------------
     SAVE/RECALL OPERATIONS
     ---------------------------------------------------------------------------------------------"""
-        
+    
+    # save the results from current calculation
     def save_results(self, currentCalculation):
-        if (len(self.savedValues) >= 5):
+        # only allow 7 saves, remove earliest save if exceeding 7
+        if (len(self.savedValues) >= 7):
             self.savedValues = self.savedValues[1:]
-        if currentCalculation != "":
-            self.savedValues.append(convert_str_to_num((currentCalculation)))
+        value_to_save = convert_str_to_num(currentCalculation)
+        if (currentCalculation != "" and value_to_save is not None):
+            # if the value is a valid number, add to array of saved results
+            self.savedValues.append(value_to_save)
         else:
-            messagebox.showerror("Save Error", "Error: There's no value to save!")
+            # otherwise output error window
+            messagebox.showerror("Save Error", "Error: Need a valid number to save!")
 
-    def recall_results(self):
-        print(self.savedValues)
+    # recall results that were saved
+    def recall_results(self, main_or_child, entry=None):
+        # create window
         self.recall_window = tk.Toplevel(self.window)
         self.recall_window.geometry("235x280")
         self.recall_window.grab_set()
         self.recall_window.resizable(0, 0)
-
         frame = tk.Frame(self.recall_window, height = 50, bg = BUTTON_EQUAL_COLOR)
         frame.pack(expand=True, fill="both")
         self.recall_window.title("Recall")
 
+        # create Listbox to display all values saved
         listbox_saved_values = tk.Listbox(frame, selectmode=tk.SINGLE, font=LABEL_SMALLER_FONT_STYLE)
         listbox_saved_values.grid(row=1, column=1, columnspan=2, sticky=tk.E + tk.W, padx=5, pady=5)
-        
         for value in self.savedValues:
             listbox_saved_values.insert(tk.END, value)
         
+        # automatically select the 1st value
         listbox_saved_values.select_set(0)
   
+        # create delete button and when clicked, calls method to delete the selected value
         button_del = tk.Button(frame, text="Delete", command=lambda:self.remove_saved_value(listbox_saved_values))
         button_del.grid(row=2, column=1, padx=5, pady=5,sticky = tk.E + tk.W)
         
-        button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values))
-        button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
+        # create a recall button, which behaves differently if we recall to the main window or a child window
+        if (main_or_child == "main"):
+            button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values, main_or_child, entry))
+            button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
+        if (main_or_child == "child"):
+            button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values, main_or_child, entry))
+            button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
 
+    # method to remove a certain saved value
     def remove_saved_value(self, listbox):
         selected_entry = listbox.curselection()
+        # output error window if there's no entry to delete
         if (len(selected_entry) == 0):
             messagebox.showerror("Delete Error", "Error: There is no saved result to delete!")
-            self.recall_window.destroy()
+        # delete the entry from listbox and array of saved values
         selected_value = listbox.get(selected_entry[0])
         listbox.delete(selected_entry)
-        listbox.select_set(0)
         self.savedValues.remove(selected_value)
+        # select the 1st entry again (if available)
+        listbox.select_set(0)
 
-    def recall_saved_value(self, listbox):
+    # method to recall a saved value to the main window or a child window
+    def recall_saved_value(self, listbox, main_or_child, entry):
         selected_entry = listbox.curselection()
+        # output error window if there's no entry to delete
         if (len(selected_entry) == 0):
             messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
-            self.recall_window.destroy()
         selected_value = listbox.get(selected_entry[0])
-        print([selected_value])
-        self.add_to_current(convert_str_to_num(selected_value))
+        # if recalling to main, add the value to main window's current calculation label
+        if (main_or_child == "main"):
+            self.add_to_current(convert_str_to_num(selected_value))
+        # if recalling to child, replace whatever's in textbox with the recalled value
+        else:
+            entry.delete(0, tk.END)
+            entry.insert(0, convert_str_to_num(selected_value))
+        # close recall window
         self.recall_window.destroy()
 
     """---------------------------------------------------------------------------------------------
