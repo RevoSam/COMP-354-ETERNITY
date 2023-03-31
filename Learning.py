@@ -395,7 +395,7 @@ class Eternity:
 
     def execute_function(self, function):
         print("Clicked! " + function)
-        if (function == 'MAD' or 'SD'):
+        if (function == "MAD" or function == "SD"):
             self.child_window_result.x = self.child_window_result.x_input.get()
         else:
             self.child_window_result.x = self.child_window_result.x_input.get()
