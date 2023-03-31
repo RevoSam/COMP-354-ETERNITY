@@ -220,8 +220,8 @@ class Eternity:
         x_label = tk.Label(frame, text="Values seprated by ',':",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
         x_label.grid(row=1, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 
-        self.child_window_result.x = tk.StringVar()
-        self.child_window_result.x.trace('w', self.test)
+        self.child_window_result.input = tk.StringVar()
+        self.child_window_result.input.trace('w', self.validate_input)
 
         self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
         self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
@@ -241,7 +241,7 @@ class Eternity:
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(1, weight=1)
 
-    def test(self, *args):
+    def validate_input(self, *args):
         legalCharachters = set("123456789.,")
         if len(self.child_window_result.x_input.get()) > 0:
             if not legalCharachters.issuperset(str(self.child_window_result.x_input.get()[-1]).strip()):
