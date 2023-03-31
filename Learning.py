@@ -523,6 +523,7 @@ class Eternity:
         selected_value = listbox.get(selected_entry[0])
         # if recalling to main, add the value to main window's current calculation label
         if (main_or_child == "main"):
+            self.currentCalculation = ""
             self.add_to_current(convert_str_to_num(selected_value))
         # if recalling to child, replace whatever's in textbox with the recalled value
         else:
