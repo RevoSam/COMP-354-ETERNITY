@@ -267,7 +267,8 @@ class Eternity:
                 self.child_window_result.x_input.delete(len(str(self.child_window_result.x_input.get())) - 1, tk.END)
         
     def calculate_using_inputedValues(self, isSample, callingFunction):
-        bool = True if (isSample.get() == 1) else False
+        if (callingFunction == "SD"):
+            bool = True if (isSample.get() == 1) else False
         input = str(self.child_window_result.x_input.get())
         array = input.split(',')
         data_points_floats = [float(i) for i in array]
@@ -283,7 +284,8 @@ class Eternity:
         self.child_window_result.destroy()
 
     def open_file_dialogue(self, isSample, callingFunction):
-        bool = True if (isSample.get() == 1) else False
+        if (callingFunction == "SD"):
+            bool = True if (isSample.get() == 1) else False
         self.child_window_result.x_input.delete(0, tk.END)
         #Launch the dialogue in the same directory where the application is running
         filepath = fd.askopenfilename(initialdir=os.getcwd(), title="File to import", filetypes=(("CSV", "*.csv"),))
@@ -413,8 +415,10 @@ class Eternity:
                 if len(entry.get()) > 0:
                     value = subordinateFunctions.sqrt(convert_str_to_num(entry.get()))
             if symbol == "recall":
-                value = self.recall_results("child", entry)
-                return
+                if len(self.savedValues) > 0:
+                    self.recall_results("child", entry)
+                else:
+                    messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
             entry.delete(0, tk.END)
             entry.insert(0, value)
 
