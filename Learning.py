@@ -236,6 +236,11 @@ class Eternity:
 
         x_label = tk.Label(frame, text="Values seprated by ',' :",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
         x_label.grid(row=1, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
+        
+        if (callingFunction == "SD"):
+            isSample = tk.IntVar()
+            sample_chkbox = tk.Checkbutton(frame, text="Sample", variable=isSample, bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+            sample_chkbox.grid(row=2, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 
         self.child_window_result.input = tk.StringVar()
         self.child_window_result.input.trace('w', self.validate_input_mad_sd)
@@ -262,6 +267,7 @@ class Eternity:
                 self.child_window_result.x_input.delete(len(str(self.child_window_result.x_input.get())) - 1, tk.END)
         
     def calculate_using_inputedValues(self, isSample, callingFunction):
+        bool = True if (isSample.get() == 1) else False
         input = str(self.child_window_result.x_input.get())
         array = input.split(',')
         data_points_floats = [float(i) for i in array]
@@ -269,7 +275,7 @@ class Eternity:
                 result = specialFunctions.mad(data_points_floats)
                 fnName = "MAD = " + str(result)
         elif callingFunction == "SD":
-                result = specialFunctions.standard_deviation(data_points_floats, isSample)
+                result = specialFunctions.standard_deviation(data_points_floats, bool)
                 fnName = "SD = " + str(result)
         self.total_label.config(text = fnName)
         self.currentCalculation = str(result)
@@ -277,6 +283,7 @@ class Eternity:
         self.child_window_result.destroy()
 
     def open_file_dialogue(self, isSample, callingFunction):
+        bool = True if (isSample.get() == 1) else False
         self.child_window_result.x_input.delete(0, tk.END)
         #Launch the dialogue in the same directory where the application is running
         filepath = fd.askopenfilename(initialdir=os.getcwd(), title="File to import", filetypes=(("CSV", "*.csv"),))
@@ -299,7 +306,7 @@ class Eternity:
                 result = specialFunctions.mad(data_points_floats)
                 fnName = "MAD = " + str(result)
             elif callingFunction == "SD":
-                result = specialFunctions.standard_deviation(data_points_floats, isSample)
+                result = specialFunctions.standard_deviation(data_points_floats, bool)
                 fnName = "SD = " + str(result)
             self.total_label.config(text = fnName)
             self.currentCalculation = str(result)
