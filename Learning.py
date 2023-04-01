@@ -1,3 +1,4 @@
+import math
 import tkinter as tk
 from tkinter import filedialog as fd
 import os
@@ -233,11 +234,11 @@ class Eternity:
 
         isSample = True
 
-        x_label = tk.Label(frame, text="Values seprated by ',':",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
+        x_label = tk.Label(frame, text="Values seprated by ',' :",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
         x_label.grid(row=1, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 
         self.child_window_result.input = tk.StringVar()
-        self.child_window_result.input.trace('w', self.validate_input)
+        self.child_window_result.input.trace('w', self.validate_input_mad_sd)
 
         self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
         self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
@@ -254,7 +255,7 @@ class Eternity:
         frame.rowconfigure(1, weight=1)
         frame.columnconfigure(1, weight=1)
 
-    def validate_input(self, *args):
+    def validate_input_mad_sd(self, *args):
         legalCharachters = set("123456789.,")
         if len(self.child_window_result.x_input.get()) > 0:
             if not legalCharachters.issuperset(str(self.child_window_result.x_input.get()[-1]).strip()):
@@ -341,7 +342,7 @@ class Eternity:
 
         i = 1
         for symbol, value in self.special_operations.items():
-            if (symbol != "Del" and function_name != "arccos"):
+            if (symbol != "Del"):
                 baground_color = BUTTON_OPERATOR_COLOR
                 font_color = LABEL_COLOR
                 button = tk.Button(frame, text = value, bg = baground_color, fg = font_color, font = PAD_FONT_STYLE, borderwidth = 0, command=lambda x=symbol: self.child_add_special_operations(x))
@@ -389,7 +390,7 @@ class Eternity:
         # frame.columnconfigure(0, weight=1)
 
          #Order of arguments: x, n, a, b
-        button = tk.Button(frame, text="Calculate", command=lambda x = arg[0]: self.execute_function(x), width=20, pady=5)
+        button = tk.Button(frame, text="Calculate", command=lambda x = arg[0]: self.validate_and_execute_special_fn(x), width=20, pady=5)
         button.grid(row=5, column= 1, columnspan=3, padx=5, pady=5)
 
     # input e/pi/square root/recall values in current textbox
@@ -410,6 +411,57 @@ class Eternity:
             entry.delete(0, tk.END)
             entry.insert(0, value)
 
+    # method to validate each input variable of a function and call execute function if validated True
+    def validate_and_execute_special_fn(self, function):
+        if (function == "Gamma"):
+            x = self.child_window_result.x_input.get()
+            if (self.is_a_number(x) and convert_str_to_num(x) > 0):
+                self.execute_function(function)
+            else:
+                messagebox.showerror("Invalid Input Error", "Error: Please enter a real number greater than 0!")
+        if (function == "sinh"):
+            x = self.child_window_result.x_input.get()
+            if (self.is_a_number(x)):
+                self.execute_function(function)
+            else:
+                messagebox.showerror("Invalid Input Error", "Error: Please enter a real number!")
+        if (function == "arccos"):
+            x = self.child_window_result.x_input.get()
+            if (self.is_a_number(x) and convert_str_to_num(x) >= -1 and convert_str_to_num(x) <= 1):
+                self.execute_function(function)
+            else:
+                messagebox.showerror("Invalid Input Error", "Error: Please enter a real number between -1 and 1!")
+        if (function == "ab^n"):
+            a = self.child_window_result.a_input.get()
+            b = self.child_window_result.b_input.get()
+            n = self.child_window_result.n_input.get()
+            if (self.is_a_number(a, b, n)):
+                self.execute_function(function)
+            else:
+                messagebox.showerror("Invalid Input Error", "Error: Please enter a real numbers for a, b, n!")
+        if (function == "x_power_n"):
+            x = self.child_window_result.x_input.get()
+            n = self.child_window_result.n_input.get()
+            if (self.is_a_number(x, n)):
+                self.execute_function(function)
+            else:
+                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers for x, n!")
+        if (function == "logb"):
+            x = self.child_window_result.x_input.get()
+            a = self.child_window_result.a_input.get()
+            if (self.is_a_number(x, a) and convert_str_to_num(a) != 1 and convert_str_to_num(x) > 0 and convert_str_to_num(a) > 0):
+                self.execute_function(function)
+            else:
+                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers greater than 0 for a, x and a cannot be 1!")
+
+    # method to check if passed string(s) can be converted to a number
+    def is_a_number(self, str1 = None, str2 = None, str3 = None, str4 = None):
+        for s in (str1, str2, str3, str4):
+            if (s is not None):
+                if (convert_str_to_num(s) is None):
+                    return False
+        return True
+        
 
     """---------------------------------------------------------------------------------------------
     EXECUTE SPECIAL FUNCTIONS
@@ -427,30 +479,37 @@ class Eternity:
             self.child_window_result.b = self.child_window_result.b_input.get()
 
         #Here is where we will call our functions
+        # 3 real numbers
         if function == "ab^n":
             self.total_label.config(text = self.child_window_result.a + "*" + self.child_window_result.b + "**" + self.child_window_result.n)
             self.currentCalculation = str(specialFunctions.natural_exp(convert_str_to_num(self.child_window_result.a), convert_str_to_num(self.child_window_result.b), convert_str_to_num(self.child_window_result.n)))
             self.update_current()
+        # 1 real numbers > 0
         if function == "Gamma":
             self.total_label.config(text = "Γ(" + self.child_window_result.x + ")")
             self.currentCalculation = str(specialFunctions.gamma(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
+        # 2 real numbers
         if function == "x_power_n":
             self.total_label.config(text = self.child_window_result.x + "**" + self.child_window_result.n)
             self.currentCalculation = str(specialFunctions.power(convert_str_to_num(self.child_window_result.x), convert_str_to_num(self.child_window_result.n)))
             self.update_current()
+        # 1 x between -1 and 1
         if function == "arccos":
             self.total_label.config(text = "arccos(" + self.child_window_result.x + ")")
             self.currentCalculation = str(specialFunctions.arccos(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
+        # 1 real number
         if function == "sinh":
             self.total_label.config(text = "sinh(" + self.child_window_result.x + ")")
             self.currentCalculation = str(specialFunctions.sinh(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
+        # x, b > 0, b != 1
         if function == "logb":
-            print(self.child_window_result.x + " " + self.child_window_result.n + " " + self.child_window_result.a + " " + self.child_window_result.b)
-        
-        self.child_window_result.destroy()
+            self.total_label.config(text = "log" + self.child_window_result.a + "(" + self.child_window_result.x + ")")
+            self.currentCalculation = str(math.log(convert_str_to_num(self.child_window_result.x), convert_str_to_num(self.child_window_result.a)))
+            self.update_current()
+        self.child_window_result.destroy()        
 
     """---------------------------------------------------------------------------------------------
     SAVE/RECALL OPERATIONS
@@ -473,16 +532,20 @@ class Eternity:
     def recall_results(self, main_or_child, entry=None):
         # create window
         self.recall_window = tk.Toplevel(self.window)
-        self.recall_window.geometry("235x280")
+        self.recall_window.geometry("300x340")
         self.recall_window.grab_set()
         self.recall_window.resizable(0, 0)
         frame = tk.Frame(self.recall_window, height = 50, bg = BUTTON_EQUAL_COLOR)
         frame.pack(expand=True, fill="both")
         self.recall_window.title("Recall")
 
+        # message to inform user they can recall up to 7 values
+        message = tk.Label(frame, text="Recall up to 7 saved results", bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font=LABEL_SMALLER_FONT_STYLE)
+        message.grid(row=1, column=1, columnspan=2, sticky=tk.E + tk.W, padx=5, pady=5)
+
         # create Listbox to display all values saved
         listbox_saved_values = tk.Listbox(frame, selectmode=tk.SINGLE, font=LABEL_SMALLER_FONT_STYLE)
-        listbox_saved_values.grid(row=1, column=1, columnspan=2, sticky=tk.E + tk.W, padx=5, pady=5)
+        listbox_saved_values.grid(row=2, column=1, columnspan=2, sticky=tk.E + tk.W, padx=5, pady=5)
         for value in self.savedValues:
             listbox_saved_values.insert(tk.END, value)
         
@@ -490,12 +553,12 @@ class Eternity:
         listbox_saved_values.select_set(0)
   
         # create delete button and when clicked, calls method to delete the selected value
-        button_del = tk.Button(frame, text="Delete", command=lambda:self.remove_saved_value(listbox_saved_values))
-        button_del.grid(row=2, column=1, padx=5, pady=5,sticky = tk.E + tk.W)
+        button_del = tk.Button(frame, text="Delete", font=LABEL_SMALLER_FONT_STYLE, command=lambda:self.remove_saved_value(listbox_saved_values))
+        button_del.grid(row=3, column=1, padx=5, pady=5,sticky = tk.E + tk.W)
         
         # create a recall button, which behaves differently if we recall to the main window or a child window
-        button_recall = tk.Button(frame, text="Recall", command = lambda:self.recall_saved_value(listbox_saved_values, main_or_child, entry))
-        button_recall.grid(row=2, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
+        button_recall = tk.Button(frame, text="Recall", font=LABEL_SMALLER_FONT_STYLE, command = lambda:self.recall_saved_value(listbox_saved_values, main_or_child, entry))
+        button_recall.grid(row=3, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
 
     # method to remove a certain saved value
     def remove_saved_value(self, listbox):
