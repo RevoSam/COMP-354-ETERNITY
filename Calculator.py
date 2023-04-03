@@ -248,7 +248,7 @@ class Eternity:
         self.child_window_result.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_result.x, width=_width)
         self.child_window_result.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
 
-        button_calc = tk.Button(frame, text="Calculate", command= lambda:self.calculate_using_inputedValues(isSample, callingFunction))
+        button_calc = tk.Button(frame, text="Calculate", command= lambda:self.validate_and_calculate_using_inputedValues(isSample, callingFunction))
         button_calc.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
 
         y_label = tk.Label(frame, text="Or Import a CSV file: ",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
@@ -266,26 +266,26 @@ class Eternity:
             if not legalCharachters.issuperset(str(self.child_window_result.x_input.get()[-1]).strip()):
                 self.child_window_result.x_input.delete(len(str(self.child_window_result.x_input.get())) - 1, tk.END)
         
-    def calculate_using_inputedValues(self, isSample, callingFunction):
-        if (callingFunction == "SD"):
-            bool = True if (isSample.get() == 1) else False
+    def validate_and_calculate_using_inputedValues(self, isSample, callingFunction):
         input = str(self.child_window_result.x_input.get())
-        array = input.split(',')
-        data_points_floats = [float(i) for i in array]
-        if callingFunction == "MAD":
+        data_points = input.split(',')
+        data_points_floats = parse_string_multi_values(data_points)
+        if data_points_floats is None:
+            messagebox.showerror("Invalid Input Error", "Please enter 2 or more real numbers separated by commas!")
+        else:
+            if callingFunction == "MAD":
                 result = specialFunctions.mad(data_points_floats)
                 fnName = "MAD = " + str(result)
-        elif callingFunction == "SD":
+            elif callingFunction == "SD":
+                bool = True if (isSample.get() == 1) else False
                 result = specialFunctions.standard_deviation(data_points_floats, bool)
                 fnName = "SD = " + str(result)
-        self.total_label.config(text = fnName)
-        self.currentCalculation = str(result)
-        self.update_current()
-        self.child_window_result.destroy()
+            self.total_label.config(text = fnName)
+            self.currentCalculation = str(result)
+            self.update_current()
+            self.child_window_result.destroy()
 
     def open_file_dialogue(self, isSample, callingFunction):
-        if (callingFunction == "SD"):
-            bool = True if (isSample.get() == 1) else False
         self.child_window_result.x_input.delete(0, tk.END)
         #Launch the dialogue in the same directory where the application is running
         filepath = fd.askopenfilename(initialdir=os.getcwd(), title="File to import", filetypes=(("CSV", "*.csv"),))
@@ -300,14 +300,17 @@ class Eternity:
             # for i in range(len(data_points)):
             #     sum += int(data_points[i])
             #print("AVG: " + str((sum / len(data_points))))
-            data_points_floats = [float(i) for i in data_points]
-            #print(specialFunctions.mad(data_points_floats))
+        data_points_floats = parse_string_multi_values(data_points)
+        if data_points_floats is None:
+            messagebox.showerror("Invalid Input Error", "Make sure data points in CSV are real numbers only!")
+        else:
             fnName = ""
             result = 0.0
             if callingFunction == "MAD":
                 result = specialFunctions.mad(data_points_floats)
                 fnName = "MAD = " + str(result)
             elif callingFunction == "SD":
+                bool = True if (isSample.get() == 1) else False
                 result = specialFunctions.standard_deviation(data_points_floats, bool)
                 fnName = "SD = " + str(result)
             self.total_label.config(text = fnName)
@@ -449,7 +452,7 @@ class Eternity:
             if (self.is_a_number(a, b, n)):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter a real numbers for a, b, n!")
+                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers for a, b, n!")
         if (function == "x_power_n"):
             x = self.child_window_result.x_input.get()
             n = self.child_window_result.n_input.get()
@@ -464,14 +467,6 @@ class Eternity:
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers greater than 0 for a, x and a cannot be 1!")
-
-    # method to check if passed string(s) can be converted to a number
-    def is_a_number(self, str1 = None, str2 = None, str3 = None, str4 = None):
-        for s in (str1, str2, str3, str4):
-            if (s is not None):
-                if (convert_str_to_num(s) is None):
-                    return False
-        return True
         
 
     """---------------------------------------------------------------------------------------------
@@ -481,13 +476,10 @@ class Eternity:
     # method to perform calculations for special functions
     def execute_function(self, function):
         print("Clicked! " + function)
-        if (function == "MAD" or function == "SD"):
-            self.child_window_result.x = self.child_window_result.x_input.get()
-        else:
-            self.child_window_result.x = self.child_window_result.x_input.get()
-            self.child_window_result.n = self.child_window_result.n_input.get()
-            self.child_window_result.a = self.child_window_result.a_input.get()
-            self.child_window_result.b = self.child_window_result.b_input.get()
+        self.child_window_result.x = self.child_window_result.x_input.get()
+        self.child_window_result.n = self.child_window_result.n_input.get()
+        self.child_window_result.a = self.child_window_result.a_input.get()
+        self.child_window_result.b = self.child_window_result.b_input.get()
 
         #Here is where we will call our functions
         # 3 real numbers
@@ -577,6 +569,7 @@ class Eternity:
         # output error window if there's no entry to delete
         if (len(selected_entry) == 0):
             messagebox.showerror("Delete Error", "Error: There is no saved result to delete!")
+            self.recall_window.destroy()
         # delete the entry from listbox and array of saved values
         selected_value = listbox.get(selected_entry[0])
         listbox.delete(selected_entry)
@@ -590,11 +583,12 @@ class Eternity:
         # output error window if there's no entry to delete
         if (len(selected_entry) == 0):
             messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
+            self.recall_window.destroy()
         selected_value = listbox.get(selected_entry[0])
         # if recalling to main, add the value to main window's current calculation label
         if (main_or_child == "main"):
-            self.currentCalculation = ""
-            self.add_to_current(convert_str_to_num(selected_value))
+            self.currentCalculation = convert_str_to_num(selected_value)
+            self.update_current()
         # if recalling to child, replace whatever's in textbox with the recalled value
         else:
             entry.delete(0, tk.END)
