@@ -7,7 +7,7 @@ import Functions.special_fn as specialFunctions
 import Functions.subordinate_fn as subordinateFunctions
 from tkinter import messagebox
 
-from Parsing import convert_str_to_num, parse_string_multi_values
+from Parsing import convert_str_to_num, is_a_number, parse_string_multi_values
 
 
 #Colors
@@ -216,7 +216,7 @@ class Eternity:
 
     def handle_multiple_inputs(self, callingFunction):
         self.child_window_result = tk.Toplevel(self.window)
-        self.child_window_result.geometry("550x150")
+        self.child_window_result.geometry("480x120")
         self.child_window_result.grab_set()
         _width = 50
         self.child_window_result.resizable(0, 0)
@@ -329,6 +329,7 @@ class Eternity:
         self.child_window_result = tk.Toplevel(self.window)
         self.child_window_result.geometry("500x300")
         _width = 20
+        self.child_window_result.grab_set()
         self.child_window_result.resizable(1, 1)
         self.child_window_result.x = tk.StringVar()
         self.child_window_result.n = tk.StringVar()
@@ -429,19 +430,19 @@ class Eternity:
     def validate_and_execute_special_fn(self, function):
         if (function == "Gamma"):
             x = self.child_window_result.x_input.get()
-            if (self.is_a_number(x) and convert_str_to_num(x) > 0):
+            if (is_a_number(x) and convert_str_to_num(x) > 0):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter a real number greater than 0!")
+                messagebox.showerror("Invalid Input Error", "Error: Please enter a positive real number!")
         if (function == "sinh"):
             x = self.child_window_result.x_input.get()
-            if (self.is_a_number(x)):
+            if (is_a_number(x)):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Error: Please enter a real number!")
         if (function == "arccos"):
             x = self.child_window_result.x_input.get()
-            if (self.is_a_number(x) and convert_str_to_num(x) >= -1 and convert_str_to_num(x) <= 1):
+            if (is_a_number(x) and convert_str_to_num(x) >= -1 and convert_str_to_num(x) <= 1):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Error: Please enter a real number between -1 and 1!")
@@ -449,24 +450,24 @@ class Eternity:
             a = self.child_window_result.a_input.get()
             b = self.child_window_result.b_input.get()
             n = self.child_window_result.n_input.get()
-            if (self.is_a_number(a, b, n)):
+            if (is_a_number(a, b, n) and convert_str_to_num(b) > 0 and convert_str_to_num(b) != 1 and convert_str_to_num(a) != 0):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers for a, b, n!")
+                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers for a, b, n where a cannot be 0, b cannot be 1 and b is a positive real number!")
         if (function == "x_power_n"):
             x = self.child_window_result.x_input.get()
             n = self.child_window_result.n_input.get()
-            if (self.is_a_number(x, n)):
+            if (is_a_number(x, n)):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers for x, n!")
         if (function == "logb"):
             x = self.child_window_result.x_input.get()
             a = self.child_window_result.a_input.get()
-            if (self.is_a_number(x, a) and convert_str_to_num(a) != 1 and convert_str_to_num(x) > 0 and convert_str_to_num(a) > 0):
+            if (is_a_number(x, a) and convert_str_to_num(a) != 1 and convert_str_to_num(x) > 0 and convert_str_to_num(a) > 0):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers greater than 0 for a, x and a cannot be 1!")
+                messagebox.showerror("Invalid Input Error", "Error: Please enter positive real numbers for a, x and a cannot be 1!")
         
 
     """---------------------------------------------------------------------------------------------
@@ -475,34 +476,33 @@ class Eternity:
 
     # method to perform calculations for special functions
     def execute_function(self, function):
-        print("Clicked! " + function)
         self.child_window_result.x = self.child_window_result.x_input.get()
         self.child_window_result.n = self.child_window_result.n_input.get()
         self.child_window_result.a = self.child_window_result.a_input.get()
         self.child_window_result.b = self.child_window_result.b_input.get()
 
         #Here is where we will call our functions
-        # 3 real numbers
+        # a != 0, b > 0, b!= 1
         if function == "ab^n":
             self.total_label.config(text = self.child_window_result.a + "*" + self.child_window_result.b + "**" + self.child_window_result.n)
             self.currentCalculation = str(specialFunctions.natural_exp(convert_str_to_num(self.child_window_result.a), convert_str_to_num(self.child_window_result.b), convert_str_to_num(self.child_window_result.n)))
             self.update_current()
-        # 1 real numbers > 0
+        # x > 0
         if function == "Gamma":
             self.total_label.config(text = "Γ(" + self.child_window_result.x + ")")
             self.currentCalculation = str(specialFunctions.gamma(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
-        # 2 real numbers
+        # x, n are real numbers
         if function == "x_power_n":
             self.total_label.config(text = self.child_window_result.x + "**" + self.child_window_result.n)
             self.currentCalculation = str(specialFunctions.power(convert_str_to_num(self.child_window_result.x), convert_str_to_num(self.child_window_result.n)))
             self.update_current()
-        # 1 x between -1 and 1
+        # x >= -1 and x <= 1
         if function == "arccos":
             self.total_label.config(text = "arccos(" + self.child_window_result.x + ")")
             self.currentCalculation = str(specialFunctions.arccos(convert_str_to_num(self.child_window_result.x)))
             self.update_current()
-        # 1 real number
+        # x is a real number
         if function == "sinh":
             self.total_label.config(text = "sinh(" + self.child_window_result.x + ")")
             self.currentCalculation = str(specialFunctions.sinh(convert_str_to_num(self.child_window_result.x)))
@@ -556,7 +556,7 @@ class Eternity:
         listbox_saved_values.select_set(0)
   
         # create delete button and when clicked, calls method to delete the selected value
-        button_del = tk.Button(frame, text="Delete", font=LABEL_SMALLER_FONT_STYLE, command=lambda:self.remove_saved_value(listbox_saved_values))
+        button_del = tk.Button(frame, text="Delete", font=LABEL_SMALLER_FONT_STYLE, command=lambda:self.remove_saved_value(listbox_saved_values, main_or_child))
         button_del.grid(row=3, column=1, padx=5, pady=5,sticky = tk.E + tk.W)
         
         # create a recall button, which behaves differently if we recall to the main window or a child window
@@ -564,26 +564,27 @@ class Eternity:
         button_recall.grid(row=3, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
 
     # method to remove a certain saved value
-    def remove_saved_value(self, listbox):
+    def remove_saved_value(self, listbox, main_or_child):
         selected_entry = listbox.curselection()
-        # output error window if there's no entry to delete
+        # output error message and close recall window if there's no entry to delete
         if (len(selected_entry) == 0):
             messagebox.showerror("Delete Error", "Error: There is no saved result to delete!")
-            self.recall_window.destroy()
-        # delete the entry from listbox and array of saved values
-        selected_value = listbox.get(selected_entry[0])
-        listbox.delete(selected_entry)
-        self.savedValues.remove(selected_value)
-        # select the 1st entry again (if available)
-        listbox.select_set(0)
+            self.close_recall_window(main_or_child)
+        else:
+            # delete the entry from listbox and array of saved values
+            selected_value = listbox.get(selected_entry[0])
+            listbox.delete(selected_entry)
+            self.savedValues.remove(selected_value)
+            # select the 1st entry again (if available)
+            listbox.select_set(0)
 
     # method to recall a saved value to the main window or a child window
     def recall_saved_value(self, listbox, main_or_child, entry):
         selected_entry = listbox.curselection()
-        # output error window if there's no entry to delete
+        # output error message if there's no entry to delete
         if (len(selected_entry) == 0):
             messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
-            self.recall_window.destroy()
+            self.close_recall_window(main_or_child)
         selected_value = listbox.get(selected_entry[0])
         # if recalling to main, add the value to main window's current calculation label
         if (main_or_child == "main"):
@@ -594,7 +595,13 @@ class Eternity:
             entry.delete(0, tk.END)
             entry.insert(0, convert_str_to_num(selected_value))
         # close recall window
+        self.close_recall_window(main_or_child)
+
+    # close recall window and return focus to the last window
+    def close_recall_window(self, main_or_child):
         self.recall_window.destroy()
+        if (main_or_child == "child"):
+            self.child_window_result.grab_set()
 
     """---------------------------------------------------------------------------------------------
     OTHER CALCULATOR OPERATIONS
@@ -681,11 +688,6 @@ class Eternity:
         self.window.mainloop()
 
 
-
-
 if __name__ == "__main__":
     myEternity = Eternity()
     myEternity.run()
-
-
-
