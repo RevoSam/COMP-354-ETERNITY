@@ -26,35 +26,9 @@ def standard_deviation(data_points, sample_sd):
     sd = subordinateFunctions.sqrt(sum_diff / N)
     
     # Here for testing purposes. Comment out during implementation.
-    print("{0} standard deviation: {1}.".format(sd_type, sd))
+    # print("{0} standard deviation: {1}.".format(sd_type, sd))
     
     return sd
-
-def standard_deviation_tests():
-    
-    # Integer values.
-    print("\nStandard deviation of the integer values [12, 11, 17, 15, 13, 12, 14, 15].")
-    print("Expected values:\nPopulation standard deviation: 1.8666480653835.\nSample standard deviation: 1.9955307206713.\nActual values:")
-    test_points = [12, 11, 17, 15, 13, 12, 14, 15]
-    standard_deviation(test_points, False)
-    standard_deviation(test_points, True)
-    
-    # Floating point values.
-    print("\nStandard deviation of the floating point values [2.5, 3.4, 2.1, 3.1, 3.2, 2.9] :")
-    print("Expected values:\nPopulation standard deviation: 0.44221663871405.\nSample standard deviation: 0.4844240566556.\nActual values:")
-    test_points = [2.5, 3.4, 2.1, 3.1, 3.2, 2.9]
-    standard_deviation(test_points, False)
-    standard_deviation(test_points, True)
-    
-    # Mixed values.
-    print("\nStandard deviation of the mixed values [7, 6.5, 7.5, 6, 3, 5.6] :")
-    print("Expected values:\nPopulation standard deviation: 1.4510532573119.\nSample standard deviation: 1.5895492023422.\nActual values:")
-    test_points = [7, 6.5, 7.5, 6, 3, 5.6]
-    standard_deviation(test_points, False)
-    standard_deviation(test_points, True)
-
-#standard_deviation_tests()
-
 
 """------------------------------
 Mean Absolute Deviation
@@ -74,7 +48,7 @@ def mad(data_points):
     mad = sum_abs / N
     
     # Here for testing purposes. Comment out during implementation.
-    print("Sample size {0}, Avg: {1}, MAD: {2}", N, mean, mad)
+    # print("Sample size {0}, Avg: {1}, MAD: {2}", N, mean, mad)
     
     return mad
 
@@ -85,11 +59,6 @@ Yirun Liu 40067857
 
 def natural_exp(a, b, x):
     return a * (b**x)
-
-# Example usage
-# result = natural_exp(2, 3, 4)  # calculates 2 * 3^4
-# print(result)  # prints 162
-
 
 """------------------------------
 SINH(X) & X^Y
@@ -103,21 +72,6 @@ def sinh(x):
 # power function x^y
 def power(x,y):
     return x**y
-
-# both x and y are integers
-# print(power(2,10))
-# x is an integer and y is a float
-# print(power(2,2.5))
-# x is a float and y is an integer
-# print(power(2.5,2))
-# both x and y are floats
-# print(power(2.5,2.5))
-
-# ------testing-------
-# print(sinh(0))
-# print(sinh(1))
-# print(sinh(PI))
-
 
 """------------------------------
 GAMMA
@@ -163,8 +117,7 @@ def gamma(z):
     sum += p[0]
     y = subordinateFunctions.sqrt(2.0*subordinateFunctions.PI)*sum*base**(z + 0.5)*subordinateFunctions.exp(-base)
 
-  return round(y, 9)
-
+  return y
 
 """------------------------------
 ARCCOS
@@ -177,7 +130,7 @@ def arccos(x):
     elif x == -1:
         return subordinateFunctions.PI
     elif x < -1 or x > 1:
-        raise ValueError("x must be between -1 and 1")
+        return None
     lower = 0
     upper = subordinateFunctions.PI
     while True:
@@ -188,8 +141,3 @@ def arccos(x):
             lower = mid
         else:
             upper = mid
-
-def main():
-    pass
-if __name__ == "__main__":
-    main()

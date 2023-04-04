@@ -17,8 +17,11 @@ EPSILON = 1e-07
 
 # Convert z to degrees.
 def deg(z):
-   return z * PI/180
+   return z * 180/PI
 
+# Convert z to radians.
+def rad(z):
+   return z * PI/180
 
 ## General maths.
 
@@ -60,11 +63,12 @@ def sin(z):
       y = y + ((-1)**i) * (z**(2*i+1)) / factorial(2*i+1)
    return y
 
-def cosine(x):
+# Taylor series approximation of cosine(z)
+def cosine(z):
    n = 75 #precision
    result = 0
    for i in range(0,n,1):
-      term = (((-1) ** i) * (x ** (2 * i))) / factorial(2 * i)
+      term = (((-1) ** i) * (z ** (2 * i))) / factorial(2 * i)
       result += term
    return result
 
@@ -79,7 +83,4 @@ def sum(arraylike):
 
 ## Misc 
     
-def main():
-    pass
-if __name__ == "__main__":
-    main()
+
