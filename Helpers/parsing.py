@@ -4,7 +4,7 @@
 
 # method to parse multiple values for MAD and SD
 def parse_string_multi_values(data_points):
-    values = None
+    values = []
     # return None if there's 1 value or less
     if (len(data_points) <= 1):
         return None
