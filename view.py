@@ -20,7 +20,7 @@ class EternityView:
 
     # Constructor
     def __init__(self, controller):
-        
+        # view holds reference to controller
         self.controller = controller
 
         self.window = tk.Tk()
@@ -147,7 +147,7 @@ class EternityView:
 
     #Initialize the equal button
     def initialize_equal_button(self):
-        button = tk.Button(self.self_buttons_frame, text = '=', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = LABEL_SMALLER_FONT_STYLE, borderwidth = 0, padx=10, command=self.controller.evaluate_current_Calculation)
+        button = tk.Button(self.self_buttons_frame, text = '=', bg = BUTTON_EQUAL_COLOR, fg = BUTTON_PAD_COLOR, font = LABEL_SMALLER_FONT_STYLE, borderwidth = 0, padx=10, command=self.controller.calculate_result)
         button.grid(row = 4, column = 5, rowspan = 2, sticky=tk.NSEW, padx=5, pady=5)
 
     def initialize_parenthesis(self):
@@ -206,6 +206,7 @@ class EternityView:
 
         self.child_window_functions.x_input = tk.Entry(frame, bg=BUTTON_PAD_COLOR, textvariable=self.child_window_functions.x, width=_width)
         self.child_window_functions.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
+        self.child_window_functions.x_input.focus()
 
         button_calc = tk.Button(frame, text="Calculate", command= lambda:self.controller.validate_and_calculate_using_inputedValues(isSample, callingFunction))
         button_calc.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
@@ -345,12 +346,20 @@ class EternityView:
         button_recall.grid(row=3, column=2, padx=5, pady=5,sticky = tk.E + tk.W)
 
     """---------------------------------------------------------------------------------------------
-    OTHER OPERATIONS
+    UI OPERATIONS
     ---------------------------------------------------------------------------------------------"""
 
-    # keyboard binding
+    # update the current calculation label
+    def update_current_label(self, str):
+        self.current_label.config(text = str)
+
+    # update the total calculation label
+    def update_total_label(self, str):
+        self.total_label.config(text = str)
+
+    # Keyboard binding
     def binding_keyboard_keys(self):
-        self.window.bind("<Return>", lambda event:self.controller.evaluate_current_Calculation())
+        self.window.bind("<Return>", lambda event:self.controller.calculate_result())
         
         for value in self.pad_values:
             if value != "√":

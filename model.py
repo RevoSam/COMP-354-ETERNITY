@@ -9,6 +9,14 @@ class EternityModel:
         self._currentCalculation = ""
         self._savedResults = []
 
+    # evaluate current math expression
+    def evaluate(self):
+        try:
+            result = str(eval(self.get_total()))
+        except Exception:
+            return "Error"
+        return result
+
     """---------------------------------------------------------------------------------------------
     GETTERS
     ---------------------------------------------------------------------------------------------"""

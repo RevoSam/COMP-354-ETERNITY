@@ -8,7 +8,7 @@ import Functions.subordinate_fn as subordinateFunctions
 from tkinter import messagebox
 from model import EternityModel
 from view import EternityView
-from Parsing import convert_str_to_num, is_a_number, parse_string_multi_values
+from Helpers.parsing import convert_str_to_num, is_a_number, parse_string_multi_values
 
 # Controller class for Eternity
 class EternityController:
@@ -61,38 +61,41 @@ class EternityController:
             if not legalCharachters.issuperset(str(self.view.child_window_functions.x_input.get()[-1]).strip()):
                 self.view.child_window_functions.x_input.delete(len(str(self.view.child_window_functions.x_input.get())) - 1, tk.END)
         
-    # method to process data points inputted manually and call function to calculate MAD / SD
+    # method to process manual input data and calculate MAD / SD
     def validate_and_calculate_using_inputedValues(self, isSample, callingFunction):
+        # convert user input to a list
         input = str(self.view.child_window_functions.x_input.get())
         data_points = input.split(',')
+        # call function to process input and calculate
         self.execute_mad_or_sd("manual", data_points, isSample, callingFunction)
         
-    # method to process imported CSV and call function to calculate MAD / SD
+    # method to process imported CSV and calculate MAD / SD
     def open_file_dialogue(self, isSample, callingFunction):
+        # delete manual input textbox if user imported csv
         self.view.child_window_functions.x_input.delete(0, tk.END)
         #Launch the dialogue in the same directory where the application is running
         filepath = fd.askopenfilename(initialdir=os.getcwd(), title="File to import", filetypes=(("CSV", "*.csv"),))
+        # get data from csv
         with open(filepath, 'r') as file:
-            #print(file.read())
             csvreader = csv.reader(file, delimiter=',')
             data_points = []
             for row in csvreader:
                 for i in range(len(row)):
                     data_points.append(row[i])
-            # for i in range(len(data_points)):
-            #     sum += int(data_points[i])
-            #print("AVG: " + str((sum / len(data_points))))
+        # call function to process input and calculate
         self.execute_mad_or_sd("csv", data_points, isSample, callingFunction)
         
     # method to calculate MAD and SD based on input
     def execute_mad_or_sd(self, input_mode, data_points, isSample, callingFunction):
         data_points_floats = parse_string_multi_values(data_points)
+        # if data points are not valid,
         if data_points_floats is None:
             if input_mode == "csv":
                 messagebox.showerror("Invalid Input Error", "Make sure data points in CSV are real numbers only!")
             elif input_mode == "manual":
                 messagebox.showerror("Invalid Input Error", "Please enter 2 or more real numbers separated by commas!")
         else:
+            # if data points are valid, calculate mad or sd
             fnName = ""
             result = 0.0
             if callingFunction == "MAD":
@@ -102,9 +105,10 @@ class EternityController:
                 bool = True if (isSample.get() == 1) else False
                 result = specialFunctions.standard_deviation(data_points_floats, bool)
                 fnName = "SD = " + str(result)
-            self.view.total_label.config(text = fnName)
+            # update model and view members
+            self.view.update_total_label(fnName)
             self.model.set_current_calculation(str(result))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
             self.view.child_window_functions.destroy()
 
     """---------------------------------------------------------------------------------------------
@@ -136,10 +140,13 @@ class EternityController:
     # method to validate each input variable of a function and call execute function if validated True
     def validate_and_execute_special_fn(self, function):
         if (function == "Gamma"):
+            # get user input
             x = self.view.child_window_functions.x_input.get()
+            # execute special function if input is a number and within function's domain
             if (is_a_number(x) and convert_str_to_num(x) > 0):
                 self.execute_function(function)
             else:
+                # else output error message
                 messagebox.showerror("Invalid Input Error", "Error: Please enter a positive real number!")
         if (function == "sinh"):
             x = self.view.child_window_functions.x_input.get()
@@ -190,34 +197,34 @@ class EternityController:
         #Here is where we will call our functions
         # a != 0, b > 0, b!= 1
         if function == "ab^n":
-            self.view.total_label.config(text = self.view.child_window_functions.a + "*" + self.view.child_window_functions.b + "**" + self.view.child_window_functions.n)
+            self.view.update_total_label(self.view.child_window_functions.a + "*" + self.view.child_window_functions.b + "**" + self.view.child_window_functions.n)
             self.model.set_current_calculation(str(specialFunctions.natural_exp(convert_str_to_num(self.view.child_window_functions.a), convert_str_to_num(self.view.child_window_functions.b), convert_str_to_num(self.view.child_window_functions.n))))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
         # x > 0
         if function == "Gamma":
-            self.view.total_label.config(text = "Γ(" + self.view.child_window_functions.x + ")")
+            self.view.update_total_label("Γ(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(specialFunctions.gamma(convert_str_to_num(self.view.child_window_functions.x))))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
         # x, n are real numbers
         if function == "x_power_n":
-            self.view.total_label.config(text = self.view.child_window_functions.x + "**" + self.view.child_window_functions.n)
+            self.view.update_total_label(self.view.child_window_functions.x + "**" + self.view.child_window_functions.n)
             self.model.set_current_calculation(str(specialFunctions.power(convert_str_to_num(self.view.child_window_functions.x), convert_str_to_num(self.view.child_window_functions.n))))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
         # x >= -1 and x <= 1
         if function == "arccos":
-            self.view.total_label.config(text = "arccos(" + self.view.child_window_functions.x + ")")
+            self.view.update_total_label("arccos(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(specialFunctions.arccos(convert_str_to_num(self.view.child_window_functions.x))))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
         # x is a real number
         if function == "sinh":
-            self.view.total_label.config(text = "sinh(" + self.view.child_window_functions.x + ")")
+            self.view.update_total_label("sinh(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(specialFunctions.sinh(convert_str_to_num(self.view.child_window_functions.x))))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
         # x, b > 0, b != 1
         if function == "logb":
-            self.view.total_label.config(text = "log" + self.view.child_window_functions.a + "(" + self.view.child_window_functions.x + ")")
+            self.view.update_total_label("log" + self.view.child_window_functions.a + "(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(math.log(convert_str_to_num(self.view.child_window_functions.x), convert_str_to_num(self.view.child_window_functions.a))))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
         self.view.child_window_functions.destroy()
 
     """---------------------------------------------------------------------------------------------
@@ -263,7 +270,7 @@ class EternityController:
         # if recalling to main, add the value to main window's current calculation label
         if (main_or_child == "main"):
             self.model.set_current_calculation(convert_str_to_num(selected_value))
-            self.update_current()
+            self.view.update_current_label(self.model.get_current_calculation())
         # if recalling to child, replace whatever's in textbox with the recalled value
         else:
             entry.delete(0, tk.END)
@@ -278,7 +285,7 @@ class EternityController:
             self.view.child_window_functions.grab_set()
 
     """---------------------------------------------------------------------------------------------
-    OTHER CALCULATOR OPERATIONS
+    GENERAL CALCULATOR OPERATIONS
     ---------------------------------------------------------------------------------------------"""
 
     def add_special_operations(self, addedvalue):
@@ -289,7 +296,7 @@ class EternityController:
             self.model.set_current_calculation(str(subordinateFunctions.EULER))
         if addedvalue == 'PI':
             self.model.set_current_calculation(str(subordinateFunctions.PI))
-        self.update_current()
+        self.view.update_current_label(self.model.get_current_calculation())
 
     #Add the number to the current Calculation
     def add_to_current(self, addedvalue):
@@ -298,7 +305,7 @@ class EternityController:
           if self.model.get_current_calculation().find('.') > 0:
               value_to_add = ""
         self.model.set_current_calculation(self.model.get_current_calculation() + str(value_to_add))
-        self.update_current()
+        self.view.update_current_label(self.model.get_current_calculation())
 
     #Add the operation to the current Calculation
     def append_operation(self, operator):
@@ -306,39 +313,34 @@ class EternityController:
         self.model.set_total(self.model.get_total() + self.model.get_current_calculation())
         self.model.set_current_calculation("")
         self.update_total()
-        self.update_current()
+        self.view.update_current_label(self.model.get_current_calculation())
 
-    #Update the total label
+    #Update the Total calculation + its label
     def update_total(self):
         totalCalculation = self.model.get_total()
         for operator, sign in self.view.operations.items():
             totalCalculation = totalCalculation.replace(operator, f' {sign} ')
-        self.view.total_label.config(text = totalCalculation)
+        self.view.update_total_label(totalCalculation)
 
-    #Update the current calculation label
-    def update_current(self):
-        self.view.current_label.config(text = self.model.get_current_calculation())
-
-    #Clear both the Total and the Current Calculation labels
+    #Clear both the Total and Current Calculation + their labels
     def clear_calculation(self):
         self.model.set_total("")
         self.model.set_current_calculation("")
         self.update_total()
-        self.update_current()
+        self.view.update_current_label(self.model.get_current_calculation())
         
     #Evaluate the current calculation
-    def evaluate_current_Calculation(self):
+    def calculate_result(self):
         self.model.set_total(self.model.get_total() + self.model.get_current_calculation())
         self.update_total()
 
-        try:
-            self.model.set_current_calculation(str(eval(self.model.get_total())))
-            self.model.set_total("")
-        except Exception as error:
-            self.model.set_current_calculation("Error: ")
-            #tk.Message(error)
-        finally:
-            self.update_current()
+        result = self.model.evaluate()
+        self.model.set_current_calculation(result)
+        self.model.set_total("")
+        self.view.update_current_label(self.model.get_current_calculation())
+        
+        if result == "Error":
+            messagebox.showerror("Math Error", "Unable to calculate the math expression!")
 
     """---------------------------------------------------------------------------------------------
     GETTER
