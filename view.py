@@ -208,13 +208,13 @@ class EternityView:
         self.child_window_functions.x_input.grid(row=1, column=2, sticky=tk.E + tk.W, padx=5, pady=5)
         self.child_window_functions.x_input.focus()
 
-        button_calc = tk.Button(frame, text="Calculate", command= lambda:self.controller.validate_and_calculate_using_inputedValues(isSample, callingFunction))
+        button_calc = tk.Button(frame, text="Calculate", command= lambda:self.controller.calculate_using_manual_input(isSample, callingFunction))
         button_calc.grid(row=2, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
 
         y_label = tk.Label(frame, text="Or Import a CSV file: ",  bg=BUTTON_EQUAL_COLOR, fg = LABEL_COLOR, padx=25, font = LABEL_SMALL_FONT_STYLE)
         y_label.grid(row=3, column=1, sticky=tk.E + tk.W, padx=5, pady=5)
 
-        button = tk.Button(frame, text="Import", command = lambda:self.controller.open_file_dialogue(isSample, callingFunction))
+        button = tk.Button(frame, text="Import", command = lambda:self.controller.calculate_using_imported_csv(isSample, callingFunction))
         button.grid(row=3, column= 2, padx=5, pady=5,sticky = tk.E + tk.W)
 
         frame.rowconfigure(1, weight=1)

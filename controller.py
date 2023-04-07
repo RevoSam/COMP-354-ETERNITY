@@ -23,7 +23,7 @@ class EternityController:
     HANDLE BUTTONS CLICK FOR SPECIAL FUNCTIONS
     ---------------------------------------------------------------------------------------------"""
 
-    # method to create new windows for special functions user selected
+    # method to handle button click of special functions
     def functions_buttons_click(self, function):
         print(function)
         if function == "ab^n":
@@ -62,7 +62,7 @@ class EternityController:
                 self.view.child_window_functions.x_input.delete(len(str(self.view.child_window_functions.x_input.get())) - 1, tk.END)
         
     # method to process manual input data and calculate MAD / SD
-    def validate_and_calculate_using_inputedValues(self, isSample, callingFunction):
+    def calculate_using_manual_input(self, isSample, callingFunction):
         # convert user input to a list
         input = str(self.view.child_window_functions.x_input.get())
         data_points = input.split(',')
@@ -70,7 +70,7 @@ class EternityController:
         self.execute_mad_or_sd("manual", data_points, isSample, callingFunction)
         
     # method to process imported CSV and calculate MAD / SD
-    def open_file_dialogue(self, isSample, callingFunction):
+    def calculate_using_imported_csv(self, isSample, callingFunction):
         # delete manual input textbox if user imported csv
         self.view.child_window_functions.x_input.delete(0, tk.END)
         #Launch the dialogue in the same directory where the application is running
@@ -84,27 +84,38 @@ class EternityController:
                     data_points.append(row[i])
         # call function to process input and calculate
         self.execute_mad_or_sd("csv", data_points, isSample, callingFunction)
-        
-    # method to calculate MAD and SD based on input
+
+    # method to calculate descriptive stats, MAD/SD based on input
     def execute_mad_or_sd(self, input_mode, data_points, isSample, callingFunction):
+        # remove any leading/trailing space and/or empty values
+        # but any other non-numerical input is preserved for user to check/correct themselves
+        data_points = [value.strip(' ') for value in data_points if len(value) != 0 and len(value.strip(' ')) != 0]
+        # parse the data points
         data_points_floats = parse_string_multi_values(data_points)
         # if data points are not valid,
         if data_points_floats is None:
             if input_mode == "csv":
-                messagebox.showerror("Invalid Input Error", "Make sure data points in CSV are real numbers only!")
+                # only output error if user chose to import csv
+                messagebox.showerror("Invalid Input Error", "CSV may only contain numerical values!")
             elif input_mode == "manual":
+                # update the textbox with processed input and output error if user input manually
+                self.view.child_window_functions.focus_get().delete(0, tk.END)
+                self.view.child_window_functions.focus_get().insert(0, ','.join(data_points))
                 messagebox.showerror("Invalid Input Error", "Please enter 2 or more real numbers separated by commas!")
         else:
             # if data points are valid, calculate mad or sd
-            fnName = ""
+            count = len(data_points_floats)
+            total = sum(data_points_floats)
+            mean = total / count
+            fnName = ("n = " + str(count) + ", \u2211 = " + str(convert_str_to_num(round(total, 4))) + ", \u0078\u0304 = " + str(convert_str_to_num(round(mean, 4))) + ", ")
             result = 0.0
             if callingFunction == "MAD":
                 result = specialFunctions.mad(data_points_floats)
-                fnName = "MAD = " + str(result)
+                fnName += "MAD = " + str(convert_str_to_num(round(result, 4)))
             elif callingFunction == "SD":
                 bool = True if (isSample.get() == 1) else False
                 result = specialFunctions.standard_deviation(data_points_floats, bool)
-                fnName = "SD = " + str(result)
+                fnName += "\u03c3 = " + str(convert_str_to_num(round(result, 4)))
             # update model and view members
             self.view.update_total_label(fnName)
             self.model.set_current_calculation(str(result))
@@ -331,16 +342,22 @@ class EternityController:
         
     #Evaluate the current calculation
     def calculate_result(self):
-        self.model.set_total(self.model.get_total() + self.model.get_current_calculation())
-        self.update_total()
+        # if there is some calculation to perform
+        if len(self.model.get_total()) != 0:
+            # update total math expression with current number
+            self.model.set_total(self.model.get_total() + self.model.get_current_calculation())
+            self.update_total()
 
-        result = self.model.evaluate()
-        self.model.set_current_calculation(result)
-        self.model.set_total("")
-        self.view.update_current_label(self.model.get_current_calculation())
-        
-        if result == "Error":
-            messagebox.showerror("Math Error", "Unable to calculate the math expression!")
+            # evaluate and display result
+            result = self.model.evaluate()
+            self.model.set_current_calculation(result)
+            self.model.set_total("")
+            self.view.update_current_label(self.model.get_current_calculation())
+            
+            # output error if cannot evaluate expression
+            if result == "Error":
+                messagebox.showerror("Math Error", "Unable to calculate the math expression!")
+
 
     """---------------------------------------------------------------------------------------------
     GETTER
