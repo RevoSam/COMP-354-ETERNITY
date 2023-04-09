@@ -624,13 +624,26 @@ class Eternity:
     def add_to_current(self, addedvalue):
         value_to_add = addedvalue
         if addedvalue == '.':
-          if self.currentCalculation.find('.') > 0:
+          if self.currentCalculation.find('.') > 0 or len(self.currentCalculation) == 0:
               value_to_add = ""
+        if addedvalue == '√':
+            if len(self.currentCalculation) > 0:
+                    addedvalue = subordinateFunctions.sqrt(convert_str_to_num(self.currentCalculation))
+                    self.total = "√(" + str(self.currentCalculation) + ")"
+                    value_to_add = str(addedvalue)
+                    self.currentCalculation = ""
+                    self.update_total()
+            elif len(self.currentCalculation) == 0:
+                value_to_add = ""
         self.currentCalculation += str(value_to_add)
         self.update_current()
 
     #Add the operation to the current Calculation
     def append_operation(self, operator):
+        for ch in str(self.total):
+            if ch == '√':
+                self.total = ""
+                break
         self.currentCalculation += operator
         self.total += self.currentCalculation
         self.currentCalculation = ""
