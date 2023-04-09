@@ -58,7 +58,7 @@ Yirun Liu 40067857
 ------------------------------"""
 
 def natural_exp(a, b, x):
-    return a * (b**x)
+    return a * pow(b,x)
 
 """------------------------------
 SINH(X) & X^Y
