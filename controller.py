@@ -8,7 +8,7 @@ import Functions.subordinate_fn as subordinateFunctions
 from tkinter import messagebox
 from model import EternityModel
 from view import EternityView
-from Helpers.parsing import convert_str_to_num, is_a_number, parse_string_multi_values
+from Helpers.parsing import convert_str_to_num, is_numerical, parse_string_multi_values
 
 # Controller class for Eternity
 class EternityController:
@@ -27,23 +27,23 @@ class EternityController:
     def functions_buttons_click(self, function):
         if function == "ab^n":
             self.view.create_special_function_window("ab^n", 0, 1, 1, 1)
-        if function == "Gamma":
+        elif function == "Gamma":
             self.view.create_special_function_window("Gamma", 1, 0, 0, 0)
-        if function == "x_power_n":
+        elif function == "x_power_n":
             self.view.create_special_function_window("x_power_n", 1, 1, 0, 0)
-        if function == "arccos":
+        elif function == "arccos":
             self.view.create_special_function_window("arccos", 1, 0, 0, 0)
-        if function == "sinh":
+        elif function == "sinh":
             self.view.create_special_function_window("sinh", 1, 0, 0, 0)
-        if function == "logb":
+        elif function == "logb":
             self.view.create_special_function_window("logb", 1, 0, 1, 0)
-        if function == "MAD":
+        elif function == "MAD":
             self.view.create_mad_sd_window("MAD")
-        if function == "sd":
+        elif function == "sd":
             self.view.create_mad_sd_window("SD")
-        if function == "Save":
+        elif function == "Save":
             self.save_results(self.model.get_current_calculation())
-        if function == "Recall":
+        elif function == "Recall":
             # open recall window, else show error if there's no saved result to recall
             if len(self.model.get_saved_results()) > 0:
                 self.view.create_recall_window("main")
@@ -102,7 +102,7 @@ class EternityController:
                 self.view.child_window_functions.focus_get().insert(0, ','.join(data_points))
                 messagebox.showerror("Invalid Input Error", "Please enter 2 or more real numbers separated by commas.")
         else:
-            # if data points are valid, calculate mad or sd
+            # if data points are valid, calculate descriptive stats and mad/sd
             count = len(data_points_floats)
             total = sum(data_points_floats)
             mean = total / count
@@ -132,12 +132,12 @@ class EternityController:
         if isinstance(entry, tk.Entry):
             if symbol == 'e':
                 value = str(subordinateFunctions.EULER)
-            if symbol == 'PI':
+            elif symbol == 'PI':
                 value = str(subordinateFunctions.PI)
-            if symbol == 'sqrt':
+            elif symbol == 'sqrt':
                 if len(entry.get()) > 0:
                     value = subordinateFunctions.sqrt(convert_str_to_num(entry.get()))
-            if symbol == "recall":
+            elif symbol == "recall":
                 # open the recall window, else show error if there's no saved result to recall
                 if len(self.model.get_saved_results()) > 0:
                     self.view.create_recall_window("child", entry)
@@ -147,51 +147,66 @@ class EternityController:
             entry.delete(0, tk.END)
             entry.insert(0, value)
 
-    # method to validate each input variable of a function and call execute function if validated True
+# method to validate each input variable of a function and call execute function if validated True
     def validate_and_execute_special_fn(self, function):
+        # initialize list of user inputs
+        string_inputs = []
+        
         if (function == "Gamma"):
             # get user input
             x = self.view.child_window_functions.x_input.get()
-            # execute special function if input is a number and within function's domain
-            if (is_a_number(x) and convert_str_to_num(x) > 0):
+            string_inputs.append(x)
+            # execute special function if input is numerical and within function's domain
+            if (is_numerical(string_inputs) and convert_str_to_num(x) > 0):
                 self.execute_function(function)
             else:
                 # else output error message
                 messagebox.showerror("Invalid Input Error", "Please enter a positive real number.")
-        if (function == "sinh"):
+        
+        elif (function == "sinh"):
             x = self.view.child_window_functions.x_input.get()
-            if (is_a_number(x)):
+            string_inputs.append(x)
+            if (is_numerical(string_inputs)):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Please enter a real number.")
-        if (function == "arccos"):
+        
+        elif (function == "arccos"):
             x = self.view.child_window_functions.x_input.get()
-            if (is_a_number(x) and convert_str_to_num(x) >= -1 and convert_str_to_num(x) <= 1):
+            string_inputs.append(x)
+            if (is_numerical(string_inputs) and convert_str_to_num(x) >= -1 and convert_str_to_num(x) <= 1):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Please enter a real number between -1 and 1.")
-        if (function == "ab^n"):
+        
+        elif (function == "ab^n"):
             a = self.view.child_window_functions.a_input.get()
             b = self.view.child_window_functions.b_input.get()
             n = self.view.child_window_functions.n_input.get()
-            if (is_a_number(a, b, n) and convert_str_to_num(b) > 0 and convert_str_to_num(b) != 1 and convert_str_to_num(a) != 0):
+            string_inputs.extend([a, b, n])
+            if (is_numerical(string_inputs) and convert_str_to_num(b) > 0 and convert_str_to_num(b) != 1 and convert_str_to_num(a) != 0):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Please enter real numbers for a, b, n: \n(1) a cannot be 0 \n(2) b cannot be 1 \n(3) b must be a positive real number")
-        if (function == "x_power_n"):
+        
+        elif (function == "x_power_n"):
             x = self.view.child_window_functions.x_input.get()
             n = self.view.child_window_functions.n_input.get()
-            if (is_a_number(x, n)):
+            string_inputs.extend([x, n])
+            if (is_numerical(string_inputs)):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Please enter real numbers for x, n.")
-        if (function == "logb"):
+        
+        elif (function == "logb"):
             x = self.view.child_window_functions.x_input.get()
             a = self.view.child_window_functions.a_input.get()
-            if (is_a_number(x, a) and convert_str_to_num(a) != 1 and convert_str_to_num(x) > 0 and convert_str_to_num(a) > 0):
+            string_inputs.extend([x, a])
+            if (is_numerical(string_inputs) and convert_str_to_num(a) != 1 and convert_str_to_num(x) > 0 and convert_str_to_num(a) > 0):
                 self.execute_function(function)
             else:
                 messagebox.showerror("Invalid Input Error", "Please enter positive real numbers for a, x: \n(1) a cannot be 1")
+
 
     """---------------------------------------------------------------------------------------------
     EXECUTE SPECIAL FUNCTIONS
@@ -211,27 +226,27 @@ class EternityController:
             self.model.set_current_calculation(str(specialFunctions.natural_exp(convert_str_to_num(self.view.child_window_functions.a), convert_str_to_num(self.view.child_window_functions.b), convert_str_to_num(self.view.child_window_functions.n))))
             self.view.update_current_label(self.model.get_current_calculation())
         # x > 0
-        if function == "Gamma":
+        elif function == "Gamma":
             self.view.update_total_label("Γ(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(specialFunctions.gamma(convert_str_to_num(self.view.child_window_functions.x))))
             self.view.update_current_label(self.model.get_current_calculation())
         # x, n are real numbers
-        if function == "x_power_n":
+        elif function == "x_power_n":
             self.view.update_total_label(self.view.child_window_functions.x + "**" + self.view.child_window_functions.n)
             self.model.set_current_calculation(str(specialFunctions.power(convert_str_to_num(self.view.child_window_functions.x), convert_str_to_num(self.view.child_window_functions.n))))
             self.view.update_current_label(self.model.get_current_calculation())
         # x >= -1 and x <= 1
-        if function == "arccos":
+        elif function == "arccos":
             self.view.update_total_label("arccos(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(specialFunctions.arccos(convert_str_to_num(self.view.child_window_functions.x))))
             self.view.update_current_label(self.model.get_current_calculation())
         # x is a real number
-        if function == "sinh":
+        elif function == "sinh":
             self.view.update_total_label("sinh(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(specialFunctions.sinh(convert_str_to_num(self.view.child_window_functions.x))))
             self.view.update_current_label(self.model.get_current_calculation())
         # x, b > 0, b != 1
-        if function == "logb":
+        elif function == "logb":
             self.view.update_total_label("log" + self.view.child_window_functions.a + "(" + self.view.child_window_functions.x + ")")
             self.model.set_current_calculation(str(math.log(convert_str_to_num(self.view.child_window_functions.x), convert_str_to_num(self.view.child_window_functions.a))))
             self.view.update_current_label(self.model.get_current_calculation())
@@ -267,24 +282,25 @@ class EternityController:
             listbox.delete(selected_entry)
             self.model.remove_saved_result(selected_value)
             # select the 1st entry again (if available)
-            listbox.select_set(0)
-
+            if len(selected_entry) != 0:
+                listbox.select_set(0)
+                
     # method to recall a saved value to the main window or a child window
     def recall_saved_value(self, listbox, main_or_child, entry):
         selected_entry = listbox.curselection()
         # output error message if there's no entry to delete
         if (len(selected_entry) == 0):
             messagebox.showerror("Recall Error", "There is no saved result to recall.")
-            self.close_recall_window(main_or_child)
-        selected_value = listbox.get(selected_entry[0])
-        # if recalling to main, add the value to main window's current calculation label
-        if (main_or_child == "main"):
-            self.model.set_current_calculation(convert_str_to_num(selected_value))
-            self.view.update_current_label(self.model.get_current_calculation())
-        # if recalling to child, replace whatever's in textbox with the recalled value
         else:
-            entry.delete(0, tk.END)
-            entry.insert(0, convert_str_to_num(selected_value))
+            selected_value = listbox.get(selected_entry[0])
+            # if recalling to main, add the value to main window's current calculation label
+            if (main_or_child == "main"):
+                self.model.set_current_calculation(convert_str_to_num(selected_value))
+                self.view.update_current_label(self.model.get_current_calculation())
+            # if recalling to child, replace whatever's in textbox with the recalled value
+            else:
+                entry.delete(0, tk.END)
+                entry.insert(0, convert_str_to_num(selected_value))
         # close recall window
         self.close_recall_window(main_or_child)
 
@@ -302,9 +318,9 @@ class EternityController:
         # self.special_operations = {'Del':'\u2190', 'e':'\u2107', 'PI': '\u03c0'}
         if addedvalue == 'Del':
             self.model.set_current_calculation(self.model.get_current_calculation()[0:len(self.model.get_current_calculation()) - 1])
-        if addedvalue == 'e':
+        elif addedvalue == 'e':
             self.model.set_current_calculation(str(subordinateFunctions.EULER))
-        if addedvalue == 'PI':
+        elif addedvalue == 'PI':
             self.model.set_current_calculation(str(subordinateFunctions.PI))
         self.view.update_current_label(self.model.get_current_calculation())
 

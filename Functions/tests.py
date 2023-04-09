@@ -6,7 +6,6 @@ from subordinate_fn import PI
 
 class Test_Gamma(unittest.TestCase):
 
-    # tests at 9 decimal points precision
     def test_gamma_valid_input(self):
         self.assertAlmostEqual(gamma(0.1), 9.513507699)
         self.assertAlmostEqual(gamma(0.2), 4.590843712)
