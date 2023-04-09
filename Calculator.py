@@ -6,8 +6,7 @@ import csv
 import Functions.special_fn as specialFunctions
 import Functions.subordinate_fn as subordinateFunctions
 from tkinter import messagebox
-
-from Parsing import convert_str_to_num, is_a_number, parse_string_multi_values
+from Helpers.parsing import convert_str_to_num, is_a_number, parse_string_multi_values
 
 
 #Colors

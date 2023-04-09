@@ -79,17 +79,13 @@ Hong Nhat Ai Nguyen 40192995
 ------------------------------"""
 
 # lanczos approximation of gamma
-def gamma(z):
-  
-  # check invalid input
-  if (z <= 0):
-     return None
+def gamma(x):
   
   # table of coefficients derived by Paul Godfrey @ http://www.numericana.com/answer/info/godfrey.htm
   # relative error less than 10^-13
-  g = 9
-  n = 10
-  p = [
+  G = 9
+  N = 10
+  P = [
     1.000000000000000174663,
  	  5716.400188274341379136,
  	  -14815.30426768413909044,
@@ -102,20 +98,24 @@ def gamma(z):
  	  0.5384136432509564062961e-7,
  	  -0.4023533141268236372067e-8
   ]
+  
+  # check invalid input
+  if (x <= 0):
+     raise ValueError("x cannot be 0")
 
-  if (z < 0.5):
+  if (x < 0.5):
     # Euler's reflection formula
-    y = subordinateFunctions.PI/(subordinateFunctions.sin(subordinateFunctions.PI*z)*gamma(1.0 - z))
+    y = subordinateFunctions.PI/(subordinateFunctions.sin(subordinateFunctions.PI*x)*gamma(1.0 - x))
   else:
-    z = z - 1.0
-    base = z + g + 0.5
+    x = x - 1.0
+    base = x + G + 0.5
     sum = 0
-    i = n
+    i = N
     while (i>=1):
-        sum += p[int(i)]/ (z + i)
+        sum += P[int(i)]/ (x + i)
         i -= 1
-    sum += p[0]
-    y = subordinateFunctions.sqrt(2.0*subordinateFunctions.PI)*sum*base**(z + 0.5)*subordinateFunctions.exp(-base)
+    sum += P[0]
+    y = subordinateFunctions.sqrt(2.0*subordinateFunctions.PI)*sum*base**(x + 0.5)*subordinateFunctions.exp(-base)
 
   return y
 
@@ -130,7 +130,7 @@ def arccos(x):
     elif x == -1:
         return subordinateFunctions.PI
     elif x < -1 or x > 1:
-        return None
+        raise ValueError("x must be between -1 and 1")
     lower = 0
     upper = subordinateFunctions.PI
     while True:
