@@ -16,8 +16,10 @@ class Test_Gamma(unittest.TestCase):
         self.assertAlmostEqual(gamma(5), 24)
     
     def test_gamma_invalid_input(self):
-        self.assertEqual(gamma(0), None)
-        self.assertEqual(gamma(-1), None)
+        with self.assertRaises(ValueError):
+            gamma(0)
+        with self.assertRaises(ValueError):
+            gamma(-1)
 
 class Test_SD(unittest.TestCase):
 
@@ -75,8 +77,10 @@ class Test_Arccos(unittest.TestCase):
         self.assertAlmostEqual(arccos(0.1), 1.4706289917)
 
     def test_arccos_invalid_input(self):
-        self.assertEqual(arccos(5), None)
-        self.assertEqual(arccos(-2), None)
-
+        with self.assertRaises(ValueError):
+            arccos(5)
+        with self.assertRaises(ValueError):
+            arccos(-2)
+            
 if __name__ == '__main__':
     unittest.main()

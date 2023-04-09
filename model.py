@@ -9,7 +9,7 @@ class EternityModel:
         self._currentCalculation = ""
         self._savedResults = []
 
-    # evaluate current math expression
+    # call eval for basic arithmetics
     def evaluate(self):
         try:
             result = str(eval(self.get_total()))

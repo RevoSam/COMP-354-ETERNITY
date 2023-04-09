@@ -1,5 +1,5 @@
-import math
 import tkinter as tk
+import math
 from tkinter import filedialog as fd
 import os
 import csv
@@ -25,7 +25,6 @@ class EternityController:
 
     # method to handle button click of special functions
     def functions_buttons_click(self, function):
-        print(function)
         if function == "ab^n":
             self.view.create_special_function_window("ab^n", 0, 1, 1, 1)
         if function == "Gamma":
@@ -49,7 +48,7 @@ class EternityController:
             if len(self.model.get_saved_results()) > 0:
                 self.view.create_recall_window("main")
             else:
-                messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
+                messagebox.showerror("Recall Error", "There is no saved result to recall.")
 
     """---------------------------------------------------------------------------------------------
     CONTROL MAD/SD CHILD WINDOW OPERATIONS
@@ -85,7 +84,7 @@ class EternityController:
         # call function to process input and calculate
         self.execute_mad_or_sd("csv", data_points, isSample, callingFunction)
 
-    # method to calculate descriptive stats, MAD/SD based on input
+    # method to calculate descriptive stats, MAD/SD and update view
     def execute_mad_or_sd(self, input_mode, data_points, isSample, callingFunction):
         # remove any leading/trailing space and/or empty values
         # but any other non-numerical input is preserved for user to check/correct themselves
@@ -96,12 +95,12 @@ class EternityController:
         if data_points_floats is None:
             if input_mode == "csv":
                 # only output error if user chose to import csv
-                messagebox.showerror("Invalid Input Error", "CSV may only contain numerical values!")
+                messagebox.showerror("Invalid Input Error", "CSV may only contain numerical values.")
             elif input_mode == "manual":
                 # update the textbox with processed input and output error if user input manually
                 self.view.child_window_functions.focus_get().delete(0, tk.END)
                 self.view.child_window_functions.focus_get().insert(0, ','.join(data_points))
-                messagebox.showerror("Invalid Input Error", "Please enter 2 or more real numbers separated by commas!")
+                messagebox.showerror("Invalid Input Error", "Please enter 2 or more real numbers separated by commas.")
         else:
             # if data points are valid, calculate mad or sd
             count = len(data_points_floats)
@@ -139,11 +138,11 @@ class EternityController:
                 if len(entry.get()) > 0:
                     value = subordinateFunctions.sqrt(convert_str_to_num(entry.get()))
             if symbol == "recall":
-                # open the recall window, else show error if there's no saved result to recall 
+                # open the recall window, else show error if there's no saved result to recall
                 if len(self.model.get_saved_results()) > 0:
                     self.view.create_recall_window("child", entry)
                 else:
-                    messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
+                    messagebox.showerror("Recall Error", "There is no saved result to recall.")
             # replace content in current textbox with special value
             entry.delete(0, tk.END)
             entry.insert(0, value)
@@ -158,19 +157,19 @@ class EternityController:
                 self.execute_function(function)
             else:
                 # else output error message
-                messagebox.showerror("Invalid Input Error", "Error: Please enter a positive real number!")
+                messagebox.showerror("Invalid Input Error", "Please enter a positive real number.")
         if (function == "sinh"):
             x = self.view.child_window_functions.x_input.get()
             if (is_a_number(x)):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter a real number!")
+                messagebox.showerror("Invalid Input Error", "Please enter a real number.")
         if (function == "arccos"):
             x = self.view.child_window_functions.x_input.get()
             if (is_a_number(x) and convert_str_to_num(x) >= -1 and convert_str_to_num(x) <= 1):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter a real number between -1 and 1!")
+                messagebox.showerror("Invalid Input Error", "Please enter a real number between -1 and 1.")
         if (function == "ab^n"):
             a = self.view.child_window_functions.a_input.get()
             b = self.view.child_window_functions.b_input.get()
@@ -178,21 +177,21 @@ class EternityController:
             if (is_a_number(a, b, n) and convert_str_to_num(b) > 0 and convert_str_to_num(b) != 1 and convert_str_to_num(a) != 0):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers for a, b, n where a cannot be 0, b cannot be 1 and b is a positive real number!")
+                messagebox.showerror("Invalid Input Error", "Please enter real numbers for a, b, n: \n(1) a cannot be 0 \n(2) b cannot be 1 \n(3) b must be a positive real number")
         if (function == "x_power_n"):
             x = self.view.child_window_functions.x_input.get()
             n = self.view.child_window_functions.n_input.get()
             if (is_a_number(x, n)):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter real numbers for x, n!")
+                messagebox.showerror("Invalid Input Error", "Please enter real numbers for x, n.")
         if (function == "logb"):
             x = self.view.child_window_functions.x_input.get()
             a = self.view.child_window_functions.a_input.get()
             if (is_a_number(x, a) and convert_str_to_num(a) != 1 and convert_str_to_num(x) > 0 and convert_str_to_num(a) > 0):
                 self.execute_function(function)
             else:
-                messagebox.showerror("Invalid Input Error", "Error: Please enter positive real numbers for a, x and a cannot be 1!")
+                messagebox.showerror("Invalid Input Error", "Please enter positive real numbers for a, x: \n(1) a cannot be 1")
 
     """---------------------------------------------------------------------------------------------
     EXECUTE SPECIAL FUNCTIONS
@@ -253,14 +252,14 @@ class EternityController:
             self.model.add_saved_result(value_to_save)
         else:
             # otherwise output error window
-            messagebox.showerror("Save Error", "Error: Need a valid number to save!")
+            messagebox.showerror("Save Error", "There is no valid number to save.")
 
     # method to remove a certain saved value
     def remove_saved_value(self, listbox, main_or_child):
         selected_entry = listbox.curselection()
         # output error message and close recall window if there's no entry to delete
         if (len(selected_entry) == 0):
-            messagebox.showerror("Delete Error", "Error: There is no saved result to delete!")
+            messagebox.showerror("Delete Error", "There is no saved result to delete.")
             self.close_recall_window(main_or_child)
         else:
             # delete the entry from listbox and array of saved values
@@ -275,7 +274,7 @@ class EternityController:
         selected_entry = listbox.curselection()
         # output error message if there's no entry to delete
         if (len(selected_entry) == 0):
-            messagebox.showerror("Recall Error", "Error: There is no saved result to recall!")
+            messagebox.showerror("Recall Error", "There is no saved result to recall.")
             self.close_recall_window(main_or_child)
         selected_value = listbox.get(selected_entry[0])
         # if recalling to main, add the value to main window's current calculation label
@@ -312,14 +311,29 @@ class EternityController:
     #Add the number to the current Calculation
     def add_to_current(self, addedvalue):
         value_to_add = addedvalue
-        if addedvalue == '.':
-          if self.model.get_current_calculation().find('.') > 0:
-              value_to_add = ""
+        current_calc = self.model.get_current_calculation()
+        if addedvalue == '.'  or len(current_calc) == 0:
+            if self.model.get_current_calculation().find('.') > 0:
+                value_to_add = ""
+        if addedvalue == '√':
+            if len(current_calc) > 0:
+                    addedvalue = subordinateFunctions.sqrt(convert_str_to_num(current_calc))
+                    self.model.set_total("√(" + str(current_calc) + ")")
+                    value_to_add = str(addedvalue)
+                    self.model.set_current_calculation("")
+                    self.update_total()
+            elif len(current_calc) == 0:
+                value_to_add = ""
+                messagebox.showerror("Invalid Input Error", "First enter a number then click √ to get its square root.")
         self.model.set_current_calculation(self.model.get_current_calculation() + str(value_to_add))
         self.view.update_current_label(self.model.get_current_calculation())
 
     #Add the operation to the current Calculation
     def append_operation(self, operator):
+        for ch in str(self.model.get_total()):
+            if ch == '√':
+                self.model.set_total("")
+                break
         self.model.set_current_calculation(self.model.get_current_calculation() + operator)
         self.model.set_total(self.model.get_total() + self.model.get_current_calculation())
         self.model.set_current_calculation("")
@@ -356,8 +370,7 @@ class EternityController:
             
             # output error if cannot evaluate expression
             if result == "Error":
-                messagebox.showerror("Math Error", "Unable to calculate the math expression!")
-
+                messagebox.showerror("Math Error", "Unable to calculate the math expression.")
 
     """---------------------------------------------------------------------------------------------
     GETTER
