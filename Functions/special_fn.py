@@ -83,9 +83,9 @@ def gamma(x):
   
   # table of coefficients derived by Paul Godfrey @ http://www.numericana.com/answer/info/godfrey.htm
   # relative error less than 10^-13
-  G = 9
-  N = 10
-  P = [
+    G = 9
+    N = 10
+    P = [
     1.000000000000000174663,
  	  5716.400188274341379136,
  	  -14815.30426768413909044,
@@ -97,27 +97,30 @@ def gamma(x):
  	  -0.7423452510201416151527e-2,
  	  0.5384136432509564062961e-7,
  	  -0.4023533141268236372067e-8
-  ]
+    ]
   
-  # check invalid input
-  if (x <= 0):
-     raise ValueError("x cannot be 0")
+    # if x is less than or equal to 0
+    if (x <= 0):
+        raise ValueError("x must be a positive real number")
+    # else if x is a positive integer
+    elif (int(x) == float(x)):
+        y = subordinateFunctions.factorial(x-1)
+    # else if x is a float less than 0.5
+    elif (x < 0.5):
+        # Euler's reflection formula
+        y = subordinateFunctions.PI/(subordinateFunctions.sin(subordinateFunctions.PI*x)*gamma(1.0 - x))
+    else:
+        x = x - 1.0
+        base = x + G + 0.5
+        sum = 0
+        i = N
+        while (i>=1):
+            sum += P[int(i)]/ (x + i)
+            i -= 1
+        sum += P[0]
+        y = subordinateFunctions.sqrt(2.0*subordinateFunctions.PI)*sum*base**(x + 0.5)*subordinateFunctions.exp(-base)
 
-  if (x < 0.5):
-    # Euler's reflection formula
-    y = subordinateFunctions.PI/(subordinateFunctions.sin(subordinateFunctions.PI*x)*gamma(1.0 - x))
-  else:
-    x = x - 1.0
-    base = x + G + 0.5
-    sum = 0
-    i = N
-    while (i>=1):
-        sum += P[int(i)]/ (x + i)
-        i -= 1
-    sum += P[0]
-    y = subordinateFunctions.sqrt(2.0*subordinateFunctions.PI)*sum*base**(x + 0.5)*subordinateFunctions.exp(-base)
-
-  return y
+    return y
 
 """------------------------------
 ARCCOS

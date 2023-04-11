@@ -45,15 +45,14 @@ def convert_str_to_num(s):
         return None
     
 # method to check if passed string(s) can be converted to a number
-def is_a_number(str1 = None, str2 = None, str3 = None, str4 = None):
-    at_least_1_input = False
-    # go through parameters passed
-    for s in (str1, str2, str3, str4):
-        # if some string was passed for the parameter
-        if (s is not None):
-            at_least_1_input = True
+def is_numerical(string_inputs):
+    if len(string_inputs) == 0:
+        return False
+    else:
+        # go through strings in the list
+        for s in string_inputs:
             # return False if any string passed CANNOT be converted to a number
             if (convert_str_to_num(s) is None):
                 return False
-    # return True if there's at least 1 string passed and all strings passed can be converted to a number
-    return True if (at_least_1_input) else False
+        # return True if all strings passed can be converted to a number
+        return True
